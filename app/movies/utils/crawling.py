@@ -15,6 +15,7 @@ import ssl
 import urllib.request as req
 
 import datetime
+from urllib import parse
 
 
 # 영화 제목
@@ -512,6 +513,89 @@ def gwangjingu_movie_crawler(area_code, year, month):
 #     table_rows = soup.select('table.table700 > tbody > tr')
 
 
+def get_extra_info(movie,title):
+
+    def get_soup(url):
+        ssl._create_default_https_context = ssl._create_unverified_context
+        res = req.urlopen(url)
+        soup = BeautifulSoup(res, 'lxml')
+        return soup
+
+    # 한글을 query 로 변환
+    title_encoded = parse.quote(title)
+
+    # 검색 url접속후 detail 페이지로 가기위한 url을 먼저 얻겠다.
+    url = "https://movie.naver.com/movie/search/result.nhn?query=" + title_encoded + "&section=all&ie=utf8"
+    soup = get_soup(url)
+
+    # 만약 아무것도 검색 결과 없다면 None 입력되고 아래 if문 못들어감.
+    detail_url_pre = soup.select_one('ul.search_list_1 > li > dl > dt > a')
+
+    if detail_url_pre:
+        pic_url =""
+        rating = 0
+        genre = ""
+        director =""
+        age =""
+        story =""
+
+        # detail로 가는 url
+        detail_url = 'https://movie.naver.com' + detail_url_pre.get('href')
+
+        soup = get_soup(detail_url)
+
+        pic_url_pre = soup.select_one('div.poster > a > img')
+        if pic_url_pre:
+            pic_url = pic_url_pre.get('src')
+            print(f'pic_url: {pic_url}')
+
+        rating_pre = soup.select_one('div.mv_info > div.main_score > div.score.score_left > div.star_score > a')
+        if rating_pre:
+            rating = rating_pre.get_text()
+            print(f'rating: {rating}')
+
+
+        genre_pre_pre = soup.select_one('div.mv_info > dl.info_spec > dt.step1')
+        if genre_pre_pre:
+            genre_pre = genre_pre_pre.find_next_siblings('dd')[0].select('p > span > a')[0] # 여기서 인덱스 에러 날수도 있다...
+            if genre_pre:
+                genre =  genre_pre.get_text()
+                print(f'genre: {genre}')
+
+
+        director_pre_pre = soup.select_one('div.mv_info > dl.info_spec > dt.step2')
+        if director_pre_pre:
+            director_pre = director_pre_pre.find_next_siblings('dd')[0]
+            if director_pre:
+                director = director_pre.get_text()
+                print(f'director: {director}')
+
+
+        age_pre_pre = soup.select_one('div.mv_info > dl.info_spec > dt.step4')
+        if age_pre_pre:
+            age_pre = age_pre_pre.find_next_siblings('dd')[0].select_one('a')
+            if age_pre:
+                age = age_pre.get_text()
+                print(f'age: {age}')
+
+        story_pre = soup.select_one('div.video')
+        if story_pre:
+            story = story_pre.get_text()
+            print(f'story: {story}')
+
+        # 썸네일이 이미 없는 경우에만 업데이트를 하자
+        if movie.thumbnail_url == "":
+            movie.thumbnail_url = pic_url
+
+        movie.rating = float(rating)
+        movie.genre = genre
+        movie.director = director
+        movie.age = age
+        movie.story = story
+        movie.save()
+
+
+
 def main_movie_crawler():
     # 오늘 날짜 먼저 가져옴
     now = datetime.datetime.now()
@@ -549,3 +633,9 @@ def main_movie_crawler():
         print(f'{area_code}#############################################################################################################################')
 
 
+
+    # 위에서 크롤링한 movie들의 extra 정보들을 update하는 함수 호출한다.
+
+    for movie in Movie.objects.all():
+        title = movie.title
+        get_extra_info(movie, title)

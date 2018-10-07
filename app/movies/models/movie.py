@@ -17,3 +17,4 @@ class Movie (models.Model):
     story = models.TextField(blank=True)
     age = models.CharField(max_length=200, blank=True)
     rating = models.FloatField(default=0, blank=True)
+    genre = models.CharField(max_length=200, blank=True)
