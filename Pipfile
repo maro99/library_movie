@@ -6,13 +6,15 @@ name = "pypi"
 [packages]
 jupyter = "*"
 notebook = "*"
-django = "*"
 requests = "*"
 selenium = "*"
 "beautifulsoup4" = "*"
 lxml = "*"
+django = "*"
 
 [dev-packages]
+django-extensions = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.6"
