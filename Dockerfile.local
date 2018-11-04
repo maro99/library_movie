@@ -1,0 +1,11 @@
+# 파일 복사 후 runserver 0:8000 실행
+FROM            eb-docker:base
+MAINTAINER      nadcdc4@gmail.com
+
+ENV             BUILD_MODE              local
+ENV             DJANGO_SETTINGS_MODULE  config.settings.${BUILD_MODE}
+
+COPY            .   /srv/project
+
+WORKDIR         /srv/project/app
+CMD             python manage.py runserver 0:8000

@@ -1,0 +1,10 @@
+# slim- 최소한 필요한것만 깔림.
+FROM                python:3.6.5-slim
+MAINTAINER          nadcdc4@gmail.com
+
+RUN                 apt -y update && apt -y dist-upgrade
+
+# 로컬의 requirements.txt파일을 /srv에 복사후 pip install 실행
+# (build하는 환경에 requirements.txt.가 있어야함!)
+COPY                ./requirements.txt /srv/
+RUN                 pip install -r /srv/requirements.txt
