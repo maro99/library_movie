@@ -23,6 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'snis8t(tla48#g13i6_w=p^mlj=2(+ohnv$_)0+k3q@5yqu9b5'
 
 
+# USER
+AUTH_USER_MODEL = 'members.User'
+
 
 # Application definition
 
@@ -33,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'members',
     'movies',
     'django_extensions',
 ]
