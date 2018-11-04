@@ -1,10 +1,15 @@
-# slim- 최소한 필요한것만 깔림.
 FROM                python:3.6.5-slim
 MAINTAINER          nadcdc4@gmail.com
 
+
 RUN                 apt -y update && apt -y dist-upgrade
 
-# 로컬의 requirements.txt파일을 /srv에 복사후 pip install 실행
-# (build하는 환경에 requirements.txt.가 있어야함!)
+RUN                 apt -y install build-essential
+# nginx, supervisor install
+RUN                 apt -y install nginx supervisor
+
+# 로컬의 requriements.txt. 파일을 /srv 에 복사한 후 pip install 실행
+# (build 하는 환경에 requirements.txt 가 있어야 함.)
 COPY                ./requirements.txt /srv/
 RUN                 pip install -r /srv/requirements.txt
+

@@ -11,6 +11,7 @@ selenium = "*"
 "beautifulsoup4" = "*"
 lxml = "*"
 django = "*"
+uwsgi = "*"
 
 [dev-packages]
 django-extensions = "*"
