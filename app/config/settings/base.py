@@ -11,16 +11,35 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+SECRET_DIR  = os.path.join(ROOT_DIR, '.secrets')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'snis8t(tla48#g13i6_w=p^mlj=2(+ohnv$_)0+k3q@5yqu9b5'
+secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
+SECRET_KEY = secrets["SECRET_KEY"]
+
+
+# Static
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
+# media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+
+
+## AWS
+AWS_ACCESS_KEY_ID = secrets["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = secrets["AWS_SECRET_ACCESS_KEY"]
+AWS_DEFAULT_ACL =  secrets["AWS_DEFAULT_ACL"]
+AWS_S3_REGION_NAME =  secrets["AWS_S3_REGION_NAME"]
+AWS_S3_SIGNATURE_VERSION =  secrets["AWS_S3_SIGNATURE_VERSION"]
 
 
 # USER
@@ -38,7 +57,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'members',
     'movies',
-    # 'django_extensions',
 ]
 
 MIDDLEWARE = [

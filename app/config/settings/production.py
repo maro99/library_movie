@@ -1,25 +1,74 @@
 from .base import *
+import sys
+secrets = json.load(open(os.path.join(SECRET_DIR,'production.json')))
 
-# SECURITY WARNING: don't run with debug turned on in production!
+RUNSERVER = sys.argv[1] == 'runserver'
 DEBUG = False
+ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
 
-ALLOWED_HOSTS = ['localhost']
+if RUNSERVER:
+    DEBUG = True
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+    ]
 
 
-WSGI_APPLICATION = 'config.wsgi.local.application'
+WSGI_APPLICATION = 'config.wsgi.production.application'
+INSTALLED_APPS += [
+    'storages',
+]
+
+# DB
+DATABASES = secrets['DATABASES']
+
+# Media
+DEFAULT_FILE_STORAGE = "config.storages.S3DefaultStorage"
+AWS_STORAGE_BUCKET_NAME = secrets["AWS_STORAGE_BUCKET_NAME"]
 
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+LOG_DIR = '/var/log/django'
+if not os.path.exists(LOG_DIR):
+    LOG_DIR = os.path.join(ROOT_DIR, '.log')
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'django.server': {
+            'format': '[%(asctime)s] %(message)s',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        'file_error': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'level': 'ERROR',
+            'formatter': 'django.server',
+            'backupCount': 10,
+            'filename': os.path.join(LOG_DIR, 'error.log'),
+            'maxBytes': 10485760,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file_error'],
+            'level': 'INFO',
+            'propagate': True,
+        }
     }
 }
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
