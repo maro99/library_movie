@@ -2,7 +2,7 @@ from .base import *
 import sys
 secrets = json.load(open(os.path.join(SECRET_DIR,'production.json')))
 
-RUNSERVER = sys.argv[1] == 'runserver'
+RUNSERVER = 'runserver' in sys.argv
 DEBUG = False
 ALLOWED_HOSTS = secrets['ALLOWED_HOSTS']
 
