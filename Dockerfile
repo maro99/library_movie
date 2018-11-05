@@ -1,18 +1,5 @@
-# slim- 최소한 필요한것만 깔림.
-FROM                python:3.6.5-slim
+FROM                nadcdc/fc-8th-eb-docker:base
 MAINTAINER          nadcdc4@gmail.com
-
-# uWSGI는 Pipfile에 기록
-RUN                 apt -y update && apt -y dist-upgrade
-RUN                 apt -y install build-essential
-RUN                 apt -y install nginx supervisor
-
-# 로컬의 requirements.txt파일을 /srv에 복사후 pip install 실행
-# (build하는 환경에 requirements.txt.가 있어야함!)
-COPY                ./requirements.txt /srv/
-RUN                 pip install -r /srv/requirements.txt
-
-
 
 #이하 production에서 복사.
 
