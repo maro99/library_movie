@@ -17,6 +17,8 @@ import json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 SECRET_DIR  = os.path.join(ROOT_DIR, '.secrets')
+TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -24,6 +26,10 @@ SECRET_DIR  = os.path.join(ROOT_DIR, '.secrets')
 # SECURITY WARNING: keep the secret key used in production secret!
 secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
 SECRET_KEY = secrets["SECRET_KEY"]
+
+# Oauth
+FACEBOOK_APP_ID = secrets['FACEBOOK_APP_ID']
+FACEBOOK_APP_SECRET_CODE = secrets["FACEBOOK_APP_SECRET_CODE"]
 
 
 # Static
@@ -79,7 +85,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
