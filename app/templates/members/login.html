@@ -33,6 +33,11 @@
            class="btn btn-primary">Naver login</a>
 
 
+        <h2>Google login test</h2>
+        <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.profile&redirect_uri={{google_redirect_uri}}&response_type=code&client_id={{google_client_id}}"
+         class="btn btn-primary">Google login</a>
+
+
         <h2>Normal login test</h2>
         <div>
             <form action="{% url 'normal_login' %}" method="POST">

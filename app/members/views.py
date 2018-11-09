@@ -264,6 +264,83 @@ def naver_login(request):
     return redirect('login_page')
 
 
+def google_login(request):
+
+    # 1. access token 얻기
+
+    code = request.GET.get('code')
+    # return HttpResponse(code)
+
+    url = 'https://www.googleapis.com/oauth2/v4/token'
+
+    redirect_uri = 'https://maro5.com/members/google_login/'
+    RUNSERVER = 'runserver' in sys.argv
+    if RUNSERVER:
+        redirect_uri = 'http://localhost:8000/members/google_login/'
+
+    params = {
+        'grant_type': 'authorization_code',
+        'client_id':GOOGLE_CLIENT_ID,
+        'redirect_uri':redirect_uri ,
+        'client_secret':GOOGLE_CLIENT_SECRET,
+        'code':code,
+    }
+
+    response = requests.post(url,params)
+    response_dict = response.json()
+    access_token = response_dict['access_token']
+    # return HttpResponse(access_token)
+
+
+
+    # # 3. access token 이용해서 회원프로필 조회
+    url = "https://www.googleapis.com/oauth2/v1/userinfo"
+
+    params ={
+        'access_token': access_token,'alt': 'json'
+    }
+
+    response = requests.get(url,params=params)
+    # return HttpResponse(response)
+
+    # {"id": "108743605198166301707", "name": "Sanmaro Na", "given_name": "Sanmaro", "family_name": "Na",
+    #  "link": "https://plus.google.com/108743605198166301707",
+    #  "picture": "https://lh6.googleusercontent.com/-cYOpZZldajQ/AAAAAAAAAAI/AAAAAAAABtw/q8-Hofd6_QY/photo.jpg",
+    #  "gender": "male", "locale": "ko"}
+
+    response_dict = response.json()
+
+
+
+    # 4. 받아온 정보 중 회원가입에 필요한 요소들 꺼내기 및 회원 가입
+    id = response_dict['id']
+    given_name = response_dict['given_name']
+    family_name = response_dict['family_name']
+
+    # 있으면 get없으면 create하고 True도 같이 반환 .
+    user, user_created = User.objects.get_or_create(
+        username=id,
+        defaults={
+            'first_name': given_name,
+            'last_name': family_name,
+        }
+    )
+
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+    # return redirect('index')
+
+    if user is not None:
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        # 어떤 함수 테스트 중인지도 전달해 주겠다.
+        frame = inspect.currentframe()
+        function_name = inspect.getframeinfo(frame).function
+        context = {'function_name': function_name}
+
+        return render(request, 'social_login_succed.html', context)
+
+    return redirect('login_page')
 
 
 def login_page(request):
@@ -271,6 +348,7 @@ def login_page(request):
     facebook_redirect_uri = 'https://maro5.com/members/facebook_login/'
     kakaotalk_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
     naver_redirect_uri = 'https://maro5.com/members/naver_login/'
+    google_redirect_uri = 'https://maro5.com/members/google_login/'
 
     # 런서버 중이면 로컬 호스트로 redirect 시케겠다.
     RUNSERVER = 'runserver' in sys.argv
@@ -278,12 +356,15 @@ def login_page(request):
         facebook_redirect_uri = 'http://localhost:8000/members/facebook_login/'
         kakaotalk_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
         naver_redirect_uri = 'http://localhost:8000/members/naver_login/'
+        google_redirect_uri = 'http://localhost:8000/members/google_login/'
 
     context = {"facebook_redirect_uri":facebook_redirect_uri,
                "kakaotalk_redirect_uri":kakaotalk_redirect_uri,
                "kakaotalk_rest_api_key": KAKAOTALK_REST_API_KEY,
                "naver_redirect_uri": naver_redirect_uri,
-               "naver_client_id": NAVER_CLIENT_ID
+               "naver_client_id": NAVER_CLIENT_ID,
+                "google_client_id": GOOGLE_CLIENT_ID,
+               "google_redirect_uri":google_redirect_uri
                }
 
 
