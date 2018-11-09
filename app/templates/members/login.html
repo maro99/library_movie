@@ -16,24 +16,24 @@
 
 
         <h2>Facebook login test</h2>
-
-
         <a href=" https://www.facebook.com/v3.0/dialog/oauth?
         client_id=546108805829214
         &redirect_uri={{facebook_redirect_uri}}
         &scope=email,public_profile" class="btn btn-primary">facebook login</a>
 
 
-        <h2>Kakao login test</h2>
 
+        <h2>Kakao login test</h2>
         <a href="https://kauth.kakao.com/oauth/authorize?client_id={{kakaotalk_rest_api_key}}&redirect_uri={{kakaotalk_redirect_uri}}&response_type=code"
            class="btn btn-primary">kakaotalk login</a>
 
 
+        <h2>Naver login test</h2>
+        <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id={{naver_client_id}}&redirect_uri={{naver_redirect_uri}}&state=RAMDOM_STATE"
+           class="btn btn-primary">Naver login</a>
 
 
         <h2>Normal login test</h2>
-
         <div>
             <form action="{% url 'normal_login' %}" method="POST">
                 {% csrf_token %}

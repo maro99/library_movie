@@ -196,21 +196,95 @@ def kakaotalk_login(request):
 
 
 
+def naver_login(request):
+
+    # 1. code 받기
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+    # return HttpResponse(state)
+
+
+    # 2 .access token 받기
+    url = "https://nid.naver.com/oauth2.0/token"
+    naver_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
+
+    RUNSERVER = 'runserver' in sys.argv
+    if RUNSERVER:
+        naver_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
+
+    params = {
+        'grant_type':'authorization_code',
+        'client_id':NAVER_CLIENT_ID,
+        'client_secret':NAVER_CLIENT_SECRET,
+        'redirect_uri':naver_redirect_uri,
+        'code':code,
+        'state':state
+    }
+
+    response = requests.post(url,params)
+    response_dict = response.json()
+    access_token = response_dict['access_token']
+    # return HttpResponse(access_token)
+
+    #
+    # # 3. access token 이용해서 회원프로필 조회
+    url = "https://openapi.naver.com/v1/nid/me"
+    headers = {
+        'Authorization': 'Bearer ' + str(access_token)
+    }
+    response = requests.post(url, headers=headers)
+    # return HttpResponse(response)
+
+    response_dict = response.json()
+
+    #4. 받아온 정보 중 회원가입에 필요한 요소들 꺼내기 및 회원 가입
+    id = response_dict['response']['id']
+    email = response_dict['response']['email']
+
+    # 있으면 get없으면 create하고 True도 같이 반환 .
+    user, user_created = User.objects.get_or_create(
+        username = id,
+        email = email,
+    )
+
+    login(request, user,backend='django.contrib.auth.backends.ModelBackend')
+
+    # return redirect('index')
+
+    if user is not None:
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        # 어떤 함수 테스트 중인지도 전달해 주겠다.
+        frame = inspect.currentframe()
+        function_name = inspect.getframeinfo(frame).function
+        context = {'function_name': function_name}
+
+        return render(request,'social_login_succed.html',context)
+
+    return redirect('login_page')
+
+
+
+
 def login_page(request):
 
     facebook_redirect_uri = 'https://maro5.com/members/facebook_login/'
     kakaotalk_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
+    naver_redirect_uri = 'https://maro5.com/members/naver_login/'
 
     # 런서버 중이면 로컬 호스트로 redirect 시케겠다.
     RUNSERVER = 'runserver' in sys.argv
     if RUNSERVER:
         facebook_redirect_uri = 'http://localhost:8000/members/facebook_login/'
         kakaotalk_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
-
+        naver_redirect_uri = 'http://localhost:8000/members/naver_login/'
 
     context = {"facebook_redirect_uri":facebook_redirect_uri,
                "kakaotalk_redirect_uri":kakaotalk_redirect_uri,
-               "kakaotalk_rest_api_key": KAKAOTALK_REST_API_KEY,}
+               "kakaotalk_rest_api_key": KAKAOTALK_REST_API_KEY,
+               "naver_redirect_uri": naver_redirect_uri,
+               "naver_client_id": NAVER_CLIENT_ID
+               }
 
 
 
