@@ -8,6 +8,13 @@
     <title>Document</title>
 </head>
 <body>
-            <h3>facebook login succeed page</h3>
+            <h3>normal login succeed page</h3>
+
+            <div>
+                <form action="{% url 'login_page' %}" method="GET">
+                    {% csrf_token %}
+                    <button type="submit">back to login page</button>
+                </form>
+            </div>
 </body>
 </html>
