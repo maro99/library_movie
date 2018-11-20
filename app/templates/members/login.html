@@ -40,7 +40,7 @@
 
         <h2>Normal login test</h2>
         <div>
-            <form action="{% url 'normal_login' %}" method="POST">
+            <form action="{% url 'members:normal_login' %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary">normal login</button>
             </form>

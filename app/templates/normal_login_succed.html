@@ -11,7 +11,7 @@
             <h3>normal login succeed page</h3>
 
             <div>
-                <form action="{% url 'login_page' %}" method="GET">
+                <form action="{% url 'members:login_page' %}" method="GET">
                     {% csrf_token %}
                     <button type="submit">back to login page</button>
                 </form>

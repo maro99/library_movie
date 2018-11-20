@@ -1,4 +1,4 @@
-FROM                nadcdc/fc-8th-eb-docker:base
+FROM                nadcdc/movie-eb-docker:base
 MAINTAINER          nadcdc4@gmail.com
 
 #이하 production에서 복사.
