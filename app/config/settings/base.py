@@ -59,6 +59,7 @@ AUTH_USER_MODEL = 'members.User'
 AUTHENTICATION_BACKENDS=[
     'django.contrib.auth.backends.ModelBackend',
     'members.backends.SettingsBackend',
+    'members.backends.FacebookBackend',
 ]
 
 # Application definition
