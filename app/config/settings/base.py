@@ -62,6 +62,19 @@ AUTHENTICATION_BACKENDS=[
     'members.backends.FacebookBackend',
 ]
 
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+# username, password넣는 옵션.
+ # test 서버에 들어있으면 좋음 (배포는 안넣는게맞음) 우리는 개발 배포 분리 못하니까 걍 들어있는 상태로 해라.
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',     # basic, sessoin, 이 기본이긴 하다.
+        # 'rest_framework.authentication.SessionAuthentication', # ( api아닌 일반에서는 session쓰지만 이건 DRF관련 인증 설정이니지워도 된다.)
+   )
+}
+
+
+
 # Application definition
 
 INSTALLED_APPS = [

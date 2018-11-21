@@ -35,6 +35,12 @@ class AuthToken(APIView):
         # authenticate에 실패한 경우
         raise AuthenticationFailed( '인증정보가 올바르지 않습니다.')
 
-# #특정 유저 정보에 대해서
-# #User serializer한 결과를 돌려주겠다.
-# class Profile
+
+class AuthenticationTest(APIView):
+    # URL:/api/users/auth-test/
+    def get(self,request):
+        # reqeust.user가 인증 된 상태일 경우, UserSerializer를 사용해 렌더링한 데이터를 보내줌.
+        # 인증되지 않았을 영우 NotAuthenticated Exception raise
+        if request.user.is_authenticated:
+            return Response(UserSerializer(request.user).data)
+        raise NotAuthenticated('로그인이 되어있지 않습니다.')
