@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, get_user_model
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -44,3 +44,14 @@ class AuthenticationTest(APIView):
         if request.user.is_authenticated:
             return Response(UserSerializer(request.user).data)
         raise NotAuthenticated('로그인이 되어있지 않습니다.')
+
+class Signup(APIView):
+    def post(self,request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            if user:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # raise serializer.validationError
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

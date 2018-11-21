@@ -9,5 +9,5 @@ class UserManager(DjangoManager): # 이렇게 오버라이드 해주면 UserMana
 
 class User(AbstractUser):
     img_profile = models.ImageField(upload_to="user", blank=True)
-
+    password2 = models.CharField(max_length=255,blank=True)
     objects = UserManager()
