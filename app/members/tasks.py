@@ -14,9 +14,7 @@ User = get_user_model()
 @celery_app.task
 def send_email(pk):
 
-    user = User.objects.get(pk)
-    user.is_active = False
-    user.save()
+    user = User.objects.get(pk=pk)
 
     # current_site = get_current_site(self.context['request']
     message = render_to_string('members/account_activate_email.html', {

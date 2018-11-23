@@ -71,6 +71,8 @@ class UserSerializer(serializers.ModelSerializer):
         email=validated_data['email']
         )
 
+        user.is_active = False
+        user.save()
 
         # 그냥 유저 전달하면 에러떠서 민규님 따라해봄
         send_email.delay(user.pk)
