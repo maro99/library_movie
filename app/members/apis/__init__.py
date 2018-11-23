@@ -51,6 +51,7 @@ class AuthenticationTest(APIView):
         raise NotAuthenticated('로그인이 되어있지 않습니다.')
 
 class Signup(APIView):
+
     def post(self,request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():

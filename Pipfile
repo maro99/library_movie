@@ -17,6 +17,7 @@ django-storages = "*"
 "psycopg2-binary" = "*"
 pillow = "*"
 djangorestframework = "*"
+celery = "*"
 
 [dev-packages]
 django-extensions = "*"
