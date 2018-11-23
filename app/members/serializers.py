@@ -1,11 +1,45 @@
-from django.contrib.auth import get_user_model
+from __future__ import absolute_import, unicode_literals
+from celery import shared_task
 
+
+from django.contrib.auth import get_user_model
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
+from .tokens import account_activation_token
 
-from .tasks import send_email
+
+
+@shared_task()
+def send_email(pk):
+
+    user = User.objects.get(pk=pk)
+
+    # current_site = get_current_site(self.context['request']
+    message = render_to_string('members/account_activate_email.html', {
+        'user': user,  # 생성한 사용자 객체
+        'domain': 'localhost:8000',  # 이거 추후에 배포시에는 바꿔줬던것 같다? #########
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),  # 생성한 사용자 객체의 pk를 암호화한 값
+        'token': account_activation_token.make_token(user)  # 생성한 사용자 객체를 통해 생성한 token값.
+    })
+
+    # 이메일 전송 과정
+    mail_subject = 'test'
+    to_email = user.email
+    # EmailMessaage(제목, 본문, 받는이)
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
+
+
+
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -61,6 +95,8 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('패스워드가 일치하지 않습니다.')
         return attrs
 
+
+
     def create(self,validated_data):
         """
         데 이터를 저장할 때 필요한 과정을 구현한다.
@@ -71,19 +107,12 @@ class UserSerializer(serializers.ModelSerializer):
         email=validated_data['email']
         )
 
-        user.is_active = False
+        user.is_active =False
         user.save()
 
-        # 그냥 유저 전달하면 에러떠서 민규님 따라해봄
         send_email.delay(user.pk)
 
-
         return user
-
-
-
-
-
 
 
 
