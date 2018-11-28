@@ -12,14 +12,20 @@
 </head>
 <body>
 
+        {% if user.is_authenticated %}
+        <span>{{user}}님이 로그인중입니다.</span>
+        {% endif %}
 
+        <br>
+        <br>
 
-
-        <h2>Facebook login test</h2>
+        <h1>##### 이하 개별 view이용한 social lgoin ####</h1>
+       <h2>Facebook login test</h2>
         <a href=" https://www.facebook.com/v3.0/dialog/oauth?
         client_id=546108805829214
         &redirect_uri={{facebook_redirect_uri}}
         &scope=email,public_profile" class="btn btn-primary">facebook login</a>
+
 
 
 
@@ -46,6 +52,14 @@
             </form>
         </div>
 
+
+        <h2>Normal login out</h2>
+        <div>
+            <form action="{% url 'members:logout_view' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">normal logout</button>
+            </form>
+        </div>
 
 
 

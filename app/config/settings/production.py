@@ -14,6 +14,8 @@ if RUNSERVER:
     ]
 
 
+CELERY_BROKER_URL ='amqp://jm-user1:sample@localhost/jm-vhost'
+
 WSGI_APPLICATION = 'config.wsgi.production.application'
 INSTALLED_APPS += [
     'storages',
