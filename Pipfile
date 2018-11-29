@@ -18,6 +18,7 @@ django-storages = "*"
 pillow = "*"
 djangorestframework = "*"
 celery = "*"
+django-allauth = "*"
 
 [dev-packages]
 django-extensions = "*"

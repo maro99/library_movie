@@ -1,3 +1,5 @@
+{% load socialaccount %}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -20,7 +22,7 @@
         <br>
 
         <h1>##### 이하 개별 view이용한 social lgoin ####</h1>
-       <h2>Facebook login test</h2>
+        <h2>Facebook login test</h2>
         <a href=" https://www.facebook.com/v3.0/dialog/oauth?
         client_id=546108805829214
         &redirect_uri={{facebook_redirect_uri}}
@@ -62,7 +64,8 @@
         </div>
 
 
-
+        <h1>##### 이하 allauth 이용한 로그인 #####</h1>
+        <a href="{% provider_login_url 'github' %}">Github login</a>
 
 </body>
 </html>

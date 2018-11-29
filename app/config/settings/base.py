@@ -58,9 +58,16 @@ ADMIN_PASSWORD = 'pbkdf2_sha256$120000$aAwW76yogDKH$1rHLC3JH5MkKaXdQSAYIg+PIrtIc
 AUTH_USER_MODEL = 'members.User'
 AUTHENTICATION_BACKENDS=[
     'django.contrib.auth.backends.ModelBackend',
-    'members.backends.SettingsBackend',
-    'members.backends.FacebookBackend',
+    'members.backends.SettingsBackend',  # 배포시 admin user로그인 시키고 마이그래이션 할때 사용
+    'members.backends.FacebookBackend',  # 소셜로그인 각각 백엔드 만들어 진행 하려던것.for
+    "allauth.account.auth_backends.AuthenticationBackend", # alluath 관련
+
 ]
+
+# alluath 관련
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/' # home
+
 
 # DRF
 REST_FRAMEWORK = {
@@ -95,9 +102,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'members',
     'movies',
+
     'rest_framework',
     'rest_framework.authtoken',
-    'celery'
+
+    'celery',
+
+    # 이하 allauth관련
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+
 ]
 
 MIDDLEWARE = [
