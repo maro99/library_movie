@@ -287,6 +287,7 @@ def login_page(request):
         google_redirect_uri = 'http://localhost:8000/members/google_login/'
 
     context = {"facebook_redirect_uri":facebook_redirect_uri,
+               "fecebook_app_id":FACEBOOK_APP_ID,
                "kakaotalk_redirect_uri":kakaotalk_redirect_uri,
                "kakaotalk_rest_api_key": KAKAOTALK_REST_API_KEY,
                "naver_redirect_uri": naver_redirect_uri,
