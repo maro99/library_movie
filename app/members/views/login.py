@@ -16,7 +16,6 @@ User = get_user_model()
 
 def normal_login(request):
 
-
     if request.method == 'POST':
         return render(request, 'normal_login_succed.html')
 
@@ -40,9 +39,6 @@ def facebook_login(request):
 
     return redirect('login_page')
 
-
-
-
 def kakaotalk_login(request):
 
     code = request.GET.get('code')
@@ -59,66 +55,15 @@ def kakaotalk_login(request):
 
     return redirect('login_page')
 
-
-
 def naver_login(request):
 
     # 1. code 받기
     code = request.GET.get('code')
     state = request.GET.get('state')
-    # return HttpResponse(state)
-
-
-    # 2 .access token 받기
-    url = "https://nid.naver.com/oauth2.0/token"
-    naver_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
-
-    RUNSERVER = 'runserver' in sys.argv
-    if RUNSERVER:
-        naver_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
-
-    params = {
-        'grant_type':'authorization_code',
-        'client_id':NAVER_CLIENT_ID,
-        'client_secret':NAVER_CLIENT_SECRET,
-        'redirect_uri':naver_redirect_uri,
-        'code':code,
-        'state':state
-    }
-
-    response = requests.post(url,params)
-    response_dict = response.json()
-    access_token = response_dict['access_token']
-    # return HttpResponse(access_token)
-
-    #
-    # # 3. access token 이용해서 회원프로필 조회
-    url = "https://openapi.naver.com/v1/nid/me"
-    headers = {
-        'Authorization': 'Bearer ' + str(access_token)
-    }
-    response = requests.post(url, headers=headers)
-    # return HttpResponse(response)
-
-    response_dict = response.json()
-
-    #4. 받아온 정보 중 회원가입에 필요한 요소들 꺼내기 및 회원 가입
-    id = response_dict['response']['id']
-    email = response_dict['response']['email']
-
-    # 있으면 get없으면 create하고 True도 같이 반환 .
-    user, user_created = User.objects.get_or_create(
-        username = id,
-        email = email,
-    )
-
-    login(request, user,backend='django.contrib.auth.backends.ModelBackend')
-
-    # return redirect('index')
+    user = authenticate(request, code=code,state=state)
 
     if user is not None:
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
+        login(request, user)
         # 어떤 함수 테스트 중인지도 전달해 주겠다.
         frame = inspect.currentframe()
         function_name = inspect.getframeinfo(frame).function
@@ -128,82 +73,19 @@ def naver_login(request):
 
     return redirect('login_page')
 
-
 def google_login(request):
 
-    # 1. access token 얻기
-
     code = request.GET.get('code')
-    # return HttpResponse(code)
-
-    url = 'https://www.googleapis.com/oauth2/v4/token'
-
-    redirect_uri = 'https://maro5.com/members/google_login/'
-    RUNSERVER = 'runserver' in sys.argv
-    if RUNSERVER:
-        redirect_uri = 'http://localhost:8000/members/google_login/'
-
-    params = {
-        'grant_type': 'authorization_code',
-        'client_id':GOOGLE_CLIENT_ID,
-        'redirect_uri':redirect_uri ,
-        'client_secret':GOOGLE_CLIENT_SECRET,
-        'code':code,
-    }
-
-    response = requests.post(url,params)
-    response_dict = response.json()
-    access_token = response_dict['access_token']
-    # return HttpResponse(access_token)
-
-
-
-    # # 3. access token 이용해서 회원프로필 조회
-    url = "https://www.googleapis.com/oauth2/v1/userinfo"
-
-    params ={
-        'access_token': access_token,'alt': 'json'
-    }
-
-    response = requests.get(url,params=params)
-    # return HttpResponse(response)
-
-    # {"id": "108743605198166301707", "name": "Sanmaro Na", "given_name": "Sanmaro", "family_name": "Na",
-    #  "link": "https://plus.google.com/108743605198166301707",
-    #  "picture": "https://lh6.googleusercontent.com/-cYOpZZldajQ/AAAAAAAAAAI/AAAAAAAABtw/q8-Hofd6_QY/photo.jpg",
-    #  "gender": "male", "locale": "ko"}
-
-    response_dict = response.json()
-
-
-
-    # 4. 받아온 정보 중 회원가입에 필요한 요소들 꺼내기 및 회원 가입
-    id = response_dict['id']
-    given_name = response_dict['given_name']
-    family_name = response_dict['family_name']
-
-    # 있으면 get없으면 create하고 True도 같이 반환 .
-    user, user_created = User.objects.get_or_create(
-        username=id,
-        defaults={
-            'first_name': given_name,
-            'last_name': family_name,
-        }
-    )
-
-    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-    # return redirect('index')
+    user = authenticate(request, code=code)
 
     if user is not None:
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
+        login(request, user)
         # 어떤 함수 테스트 중인지도 전달해 주겠다.
         frame = inspect.currentframe()
         function_name = inspect.getframeinfo(frame).function
         context = {'function_name': function_name}
 
-        return render(request, 'social_login_succed.html', context)
+        return render(request,'social_login_succed.html',context)
 
     return redirect('login_page')
 

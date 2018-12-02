@@ -12,7 +12,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 
-from config.settings.base import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET_CODE, KAKAOTALK_REST_API_KEY
+from config.settings.base import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET_CODE, KAKAOTALK_REST_API_KEY, NAVER_CLIENT_ID, \
+    NAVER_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
 User = get_user_model()
 
@@ -253,91 +254,145 @@ class KakaotalkBackend:
             return None
 
 
-#
-#
-#
-#
-#
-# class NaverBackend:
-#     def authenticate(self, request, code):
-#
-#         def get_access_token(code):
-#             return access_token
-#
-#         def get_debug_token(access_token):
-#             return response
-#
-#
-#         def get_user_info_by_GrapicAPI(access_token):  # , fields=None
-#
-#
-#             return user_info_dict
-#
-#         def create_user_from_facebook_user_info(response_dict):
-#
-#
-#             return User.objects.get_or_create(
-#                 username=facebook_user_id,  # 이값은 고유해서 get할때 사용 가능.
-#                 defaults={  # 이값은 고유하지 않아도됨. 입력되는 값.
-#                     'first_name': first_name,
-#                     'last_name': last_name,
-#                 }
-#             )
-#
-#         access_token = get_access_token(code)
-#         user_info_dict = get_user_info_by_GrapicAPI(
-#             access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
-#         user, user_created = create_user_from_facebook_user_info(user_info_dict)
-#
-#         return user
-#
-#     def get_user(self, user_id):
-#
-#         try:
-#             return User.objects.get(pk=user_id)
-#         except User.DoesNotExist:
-#             return None
-#
-#
-#
-#
-#
-# class GoogleBackend:
-#     def authenticate(self, request, code):
-#
-#         def get_access_token(code):
-#             return access_token
-#
-#         def get_debug_token(access_token):
-#             return response
-#
-#
-#         def get_user_info_by_GrapicAPI(access_token):  # , fields=None
-#
-#
-#             return user_info_dict
-#
-#         def create_user_from_facebook_user_info(response_dict):
-#
-#
-#             return User.objects.get_or_create(
-#                 username=facebook_user_id,  # 이값은 고유해서 get할때 사용 가능.
-#                 defaults={  # 이값은 고유하지 않아도됨. 입력되는 값.
-#                     'first_name': first_name,
-#                     'last_name': last_name,
-#                 }
-#             )
-#
-#         access_token = get_access_token(code)
-#         user_info_dict = get_user_info_by_GrapicAPI(
-#             access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
-#         user, user_created = create_user_from_facebook_user_info(user_info_dict)
-#
-#         return user
-#
-#     def get_user(self, user_id):
-#
-#         try:
-#             return User.objects.get(pk=user_id)
-#         except User.DoesNotExist:
-#             return None
+class NaverBackend:
+    def authenticate(self, request, code, state):##########
+
+        def get_access_token(code,state):###########
+            url = "https://nid.naver.com/oauth2.0/token"
+            naver_redirect_uri = 'https://maro5.com/members/naver_login/'
+
+            RUNSERVER = 'runserver' in sys.argv
+            if RUNSERVER:
+                naver_redirect_uri = 'http://localhost:8000/members/naver_login/'
+
+            params = {
+                'grant_type': 'authorization_code',
+                'client_id': NAVER_CLIENT_ID,
+                'client_secret': NAVER_CLIENT_SECRET,
+                'redirect_uri': naver_redirect_uri,
+                'code': code,
+                'state': state
+            }
+
+            response = requests.post(url, params)
+            response_dict = response.json()
+            access_token = response_dict.get('access_token',None)
+
+            return access_token
+
+        def get_user_info(access_token):  # , fields=None
+            url = "https://openapi.naver.com/v1/nid/me"
+            headers = {
+                'Authorization': 'Bearer ' + str(access_token)
+            }
+            response = requests.post(url, headers=headers)
+            # return HttpResponse(response)
+
+            response_dict = response.json()
+
+            return response_dict
+
+        def create_user_from_naver_user_info(response_dict):
+            id = response_dict['response']['id']
+            email = response_dict['response']['email']
+
+            return User.objects.get_or_create(
+                username=id,  # 이값은 고유해서 get할때 사용 가능.
+                email=email,
+                # defaults={  # 이값은 고유하지 않아도됨. 입력되는 값.
+                #     'first_name': first_name,
+                #     'last_name': last_name,
+                # }
+            )
+
+        access_token = get_access_token(code,state)#########
+
+        if access_token:
+            user_info_dict = get_user_info(
+                access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
+            user, user_created = create_user_from_naver_user_info(user_info_dict)
+
+            return user
+        return None
+
+    def get_user(self, user_id):
+
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+
+
+class GoogleBackend:
+    def authenticate(self, request, code):
+
+        def get_access_token(code):
+            url = 'https://www.googleapis.com/oauth2/v4/token'
+
+            redirect_uri = 'https://maro5.com/members/google_login/'
+            RUNSERVER = 'runserver' in sys.argv
+            if RUNSERVER:
+                redirect_uri = 'http://localhost:8000/members/google_login/'
+
+            params = {
+                'grant_type': 'authorization_code',
+                'client_id': GOOGLE_CLIENT_ID,
+                'redirect_uri': redirect_uri,
+                'client_secret': GOOGLE_CLIENT_SECRET,
+                'code': code,
+            }
+
+            response = requests.post(url, params)
+            response_dict = response.json()
+            access_token = response_dict.get('access_token',None)
+
+            return  access_token
+
+        def get_user_info (access_token):  # , fields=None
+            # # 3. access token 이용해서 회원프로필 조회
+            url = "https://www.googleapis.com/oauth2/v1/userinfo"
+
+            params = {
+                'access_token': access_token, 'alt': 'json'
+            }
+
+            response = requests.get(url, params=params)
+            # return HttpResponse(response)
+
+            # {"id": "108743605198166301707", "name": "Sanmaro Na", "given_name": "Sanmaro", "family_name": "Na",
+            #  "link": "https://plus.google.com/108743605198166301707",
+            #  "picture": "https://lh6.googleusercontent.com/-cYOpZZldajQ/AAAAAAAAAAI/AAAAAAAABtw/q8-Hofd6_QY/photo.jpg",
+            #  "gender": "male", "locale": "ko"}
+
+            response_dict = response.json()
+
+            return response_dict
+
+        def create_user_from_google_user_info(response_dict):
+            id = response_dict['id']
+            given_name = response_dict['given_name']
+            family_name = response_dict['family_name']
+
+            return User.objects.get_or_create(
+
+                username=id,
+                defaults={
+                    'first_name': given_name, # 이값은 고유해서 get할때 사용 가능.
+                    'last_name': family_name,# 이값은 고유하지 않아도됨. 입력되는 값.
+                }
+            )
+
+        access_token = get_access_token(code)
+        if access_token:
+            user_info_dict = get_user_info(
+                access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
+            user, user_created = create_user_from_google_user_info(user_info_dict)
+            return user
+        return None
+
+    def get_user(self, user_id):
+
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None

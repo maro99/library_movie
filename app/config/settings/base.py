@@ -61,6 +61,8 @@ AUTHENTICATION_BACKENDS=[
     'members.backends.SettingsBackend',  # 배포시 admin user로그인 시키고 마이그래이션 할때 사용
     'members.backends.FacebookBackend',  # 소셜로그인 각각 백엔드 만들어 진행 하려던것.for
     'members.backends.KakaotalkBackend',
+    'members.backends.NaverBackend',
+    'members.backends.GoogleBackend',
     "allauth.account.auth_backends.AuthenticationBackend", # alluath 관련
 
 ]
