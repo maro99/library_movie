@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 
-from config.settings.base import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET_CODE
+from config.settings.base import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET_CODE, KAKAOTALK_REST_API_KEY
 
 User = get_user_model()
 
@@ -56,8 +56,6 @@ class FacebookBackend:
         # 전달받은 인증코드를 사용해서 엑세스토큰을 받음.(facebook의 access_token주소로 get요청통해서)
         def get_access_token(code):
             # access token 얻기
-
-            code = request.GET.get('code')
             url = 'https://graph.facebook.com/v3.0/oauth/access_token'
 
             redirect_uri = 'https://maro5.com/members/facebook_login/'
@@ -74,7 +72,7 @@ class FacebookBackend:
 
             response = requests.get(url, params)
             response_dict = response.json()
-            access_token = response_dict['access_token']
+            access_token = response_dict.get('access_token',None)
 
             return access_token
 
@@ -150,11 +148,14 @@ class FacebookBackend:
             )
 
         access_token = get_access_token(code)
-        user_info_dict = get_user_info_by_GrapicAPI(
-            access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
-        user, user_created = create_user_from_facebook_user_info(user_info_dict)
 
-        return user
+        if access_token:
+            user_info_dict = get_user_info_by_GrapicAPI(
+                access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
+            user, user_created = create_user_from_facebook_user_info(user_info_dict)
+            return user
+
+        return None
 
     def get_user(self,user_id):
         '''
@@ -170,64 +171,88 @@ class FacebookBackend:
             return None
 
 
+class KakaotalkBackend:
+    def authenticate(self, request, code):
+
+        # 2 .access token 받기
+        def get_access_token(code):
+            url = "https://kauth.kakao.com/oauth/token"
+            kakaotalk_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
+
+            RUNSERVER = 'runserver' in sys.argv
+            if RUNSERVER:
+                kakaotalk_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
+
+            params = {
+                'grant_type': 'authorization_code',
+                'client_id': KAKAOTALK_REST_API_KEY,
+                'redirect_uri': kakaotalk_redirect_uri,
+                'code': code
+            }
+
+            response = requests.post(url, params)
+            response_dict = response.json()
+            access_token = response_dict.get('access_token',None)
 
 
+            return access_token
 
 
+        def get_user_info(access_token):  # , fields=None
+
+            # 3. access token 이용해서 app loigin
+            # 엡연결-로긴 은 로그인한 사용자와 앱을 카카오 플랫폼에 연결함으로서
+            # 일반적인 사용자가 앱 가입/등록 요청을 하는 경우와 비슷하다.
+            # 카카오 서비스 이용하기 위해서 로그인 후 앱연결 선행되야 하고 앱연결 올바로 수행되면 사용자대한 고유한 아이디 부여된다.
+            url = "https://kapi.kakao.com/v1/user/signup"
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache',
+            }
+            headers.update({'Authorization': 'Bearer ' + str(access_token)})
+            response = requests.post(url, headers=headers)
+            # return HttpResponse(response)
+
+            # 4. acces _token 이용해서 사용자 정보 요청.
+            # 사용자의 id, 카카오 계정 email 및 상세정보 얻어올 수 있는 기능.
+            # 사용자 로그인 후 얻은 사용자토큰, 엡연결이 되어있어야 한다.
+            url = "https://kapi.kakao.com/v1/user/me"
+            response = requests.post(url, headers=headers)
+            # return HttpResponse(response)
+
+            response_dict = response.json()
+
+            return response_dict
+
+        def create_user_from_kakaotalk_user_info(response_dict):
+            id = response_dict['id']
+            email = response_dict['kaccount_email']
+            nickname = response_dict['properties']['nickname']
+            url_img_profile = response_dict['properties']['profile_image']  # ['url']
+
+            return User.objects.get_or_create(
+                username=id,
+                email=email,
+            )
+
+        access_token = get_access_token(code)
+
+        if access_token:
+            user_info_dict = get_user_info(
+                access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
+            user, user_created = create_user_from_kakaotalk_user_info(user_info_dict)
+
+            return user
+        return None
+
+    def get_user(self, user_id):
+
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
 
 
-
-
-
-
-
-
-
-#
-#
-#
-#
-# class KakaotalkBackend:
-#     def authenticate(self, request, code):
-#
-#         def get_access_token(code):
-#             return access_token
-#
-#         def get_debug_token(access_token):
-#             return response
-#
-#
-#         def get_user_info_by_GrapicAPI(access_token):  # , fields=None
-#
-#
-#             return user_info_dict
-#
-#         def create_user_from_facebook_user_info(response_dict):
-#
-#
-#             return User.objects.get_or_create(
-#                 username=facebook_user_id,  # 이값은 고유해서 get할때 사용 가능.
-#                 defaults={  # 이값은 고유하지 않아도됨. 입력되는 값.
-#                     'first_name': first_name,
-#                     'last_name': last_name,
-#                 }
-#             )
-#
-#         access_token = get_access_token(code)
-#         user_info_dict = get_user_info_by_GrapicAPI(
-#             access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
-#         user, user_created = create_user_from_facebook_user_info(user_info_dict)
-#
-#         return user
-#
-#     def get_user(self, user_id):
-#
-#         try:
-#             return User.objects.get(pk=user_id)
-#         except User.DoesNotExist:
-#             return None
-#
-#
 #
 #
 #
