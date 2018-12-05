@@ -19,6 +19,10 @@ DATABASES = {
     }
 }
 
+# CELERY + Redis
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
 
 LOG_DIR = os.path.join(ROOT_DIR, '.log')
 if not os.path.exists(LOG_DIR):

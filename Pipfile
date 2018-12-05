@@ -17,7 +17,7 @@ django-storages = "*"
 "psycopg2-binary" = "*"
 pillow = "*"
 djangorestframework = "*"
-celery = "*"
+celery = {extras = ["redis"]}
 django-allauth = "*"
 
 [dev-packages]
