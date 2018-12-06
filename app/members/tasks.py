@@ -1,3 +1,7 @@
+# celery-beat
+from __future__ import absolute_import, unicode_literals
+import random
+
 # Celery 사용 위한것
 from config import celery_app
 from django.core.mail import EmailMessage
@@ -30,3 +34,14 @@ def send_email(pk):
     # EmailMessaage(제목, 본문, 받는이)
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
+
+
+# celery-beat tutorial 따라한것.
+@celery_app.task(name="sum_two_numbers")
+def add(x, y):
+    return x + y
+
+@celery_app.task(name="multiply_two_numbers")
+def mul(x, y):
+    total = x * (y * random.randint(3, 100))
+    return total

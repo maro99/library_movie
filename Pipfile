@@ -17,8 +17,11 @@ django-storages = "*"
 "psycopg2-binary" = "*"
 pillow = "*"
 djangorestframework = "*"
-celery = {extras = ["redis"]}
 django-allauth = "*"
+django-celery-beat = "*"
+django-celery-results = "*"
+redis = "==2.10.6"
+celery = "*"
 
 [dev-packages]
 django-extensions = "*"

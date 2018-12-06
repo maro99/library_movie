@@ -110,6 +110,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     'celery',
+    'django_celery_beat',
+    'django_celery_results',
 
     # 이하 allauth관련
     'django.contrib.sites',
