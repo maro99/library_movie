@@ -23,12 +23,18 @@ INSTALLED_APPS += [
 DATABASES = secrets['DATABASES']
 
 
-# CELERY + Redis
+# CELERY + Redis  #local에서
 # CELERY_BROKER_URL = 'redis://localhost:6379/0'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
-CELERY_BROKER_URL = 'redis://0'
-CELERY_RESULT_BACKEND = 'redis://0'
+# # CELERY + Redis  # dev docker에서 elasticache말고 자체 캐시 쓸때
+# CELERY_BROKER_URL = 'redis://0'
+# CELERY_RESULT_BACKEND = 'redis://0'
+
+#CELERY + Redis
+CELERY_BROKER_URL = 'redis://'+ AWS_ELASTIC_CACHE
+CELERY_RESULT_BACKEND = 'redis://' + AWS_ELASTIC_CACHE
+
 
 # CELERY_BEAT
 CELERY_ACCEPT_CONTENT = ['application/json']
