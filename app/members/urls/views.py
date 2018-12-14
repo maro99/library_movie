@@ -8,6 +8,10 @@ urlpatterns = [
     path('login_page/', views.login_page, name='login_page'),
     path('normal_login/', views.normal_login, name='normal_login'),
     path('logout_view/',views.logout_view, name='logout_view'),
+    path('signup_page/', views.signup,name='signup_page'),
+    path('activate/<str:uidb64>/<str:token>', views.user_activate, name='activate'),
+
+
 
     path('facebook_login/', views.facebook_login, name='facebook_login'),
     path('kakaotalk_login/', views.kakaotalk_login, name='kakaotalk_login'),

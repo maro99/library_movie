@@ -1,0 +1,28 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+        <br>
+        <br>
+
+        <h1>##### 회원가입 #####</h1>
+        <div>
+            <form action="{% url 'members:signup_page' %}" method="POST">
+                {% csrf_token %}
+                아이디
+                <input type="username" name = "username">
+                페스워드
+                <input type="password" name = "password">
+                <input type="password2" name = "password2">
+                이메일
+                <input type="email" name = "email">
+                전화번호
+                <input type="phone_number" name = "phone_number">
+                <button type="submit" class="btn btn-primary">sign-up</button>
+            </form>
+        </div>
+
+
+
+
+{% endblock %}

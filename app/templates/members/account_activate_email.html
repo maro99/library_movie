@@ -1,2 +1,9 @@
 {{user.name}}님, 아래 링크를 클릭해서 계정을 활성화 해주세요.
-http://{{domain}}{% url 'members-api:activate' uidb64=uid token=token %}
+https://{{domain}}{% url 'members-api:activate' uidb64=uid token=token %}
+
+<br>
+or
+
+<br>
+https://localhost:8000{% url 'members-api:activate' uidb64=uid token=token %}
+

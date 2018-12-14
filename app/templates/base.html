@@ -30,7 +30,8 @@
         </div>
 
         {% else %}
-        <a href="{% url 'members:login_page' %}" class="btn btn-primary">로그인하기</a>
+        <a href="{% url 'members:login_page' %}" class="btn btn-primary">로그인</a>
+        <a href="{% url 'members:signup_page' %}" class="btn btn-primary">회원가입</a>
         {% endif %}
 
     </div>
