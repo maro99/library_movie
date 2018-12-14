@@ -17,11 +17,13 @@ User = get_user_model()
 def normal_login(request):
 
     if request.method == 'POST':
-        return render(request, 'members/normal_login_succed.html')
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
 
-    else:
-        return render(request,'members/login.html')
-
+    return redirect('main_page')
 
 def facebook_login(request):
 
@@ -30,14 +32,8 @@ def facebook_login(request):
 
     if user is not None:
         login(request, user)
-        # 어떤 함수 테스트 중인지도 전달해 주겠다.
-        frame = inspect.currentframe()
-        function_name = inspect.getframeinfo(frame).function
-        context = {'function_name': function_name}
 
-        return render(request,'members/social_login_succed.html',context)
-
-    return redirect('login_page')
+    return redirect('main_page')
 
 def kakaotalk_login(request):
 
@@ -46,14 +42,8 @@ def kakaotalk_login(request):
 
     if user is not None:
         login(request, user)
-        # 어떤 함수 테스트 중인지도 전달해 주겠다.
-        frame = inspect.currentframe()
-        function_name = inspect.getframeinfo(frame).function
-        context = {'function_name': function_name}
 
-        return render(request,'members/social_login_succed.html',context)
-
-    return redirect('login_page')
+    return redirect('main_page')
 
 def naver_login(request):
 
@@ -64,14 +54,8 @@ def naver_login(request):
 
     if user is not None:
         login(request, user)
-        # 어떤 함수 테스트 중인지도 전달해 주겠다.
-        frame = inspect.currentframe()
-        function_name = inspect.getframeinfo(frame).function
-        context = {'function_name': function_name}
 
-        return render(request,'members/social_login_succed.html',context)
-
-    return redirect('login_page')
+    return redirect('main_page')
 
 def google_login(request):
 
@@ -80,22 +64,10 @@ def google_login(request):
 
     if user is not None:
         login(request, user)
-        # 어떤 함수 테스트 중인지도 전달해 주겠다.
-        frame = inspect.currentframe()
-        function_name = inspect.getframeinfo(frame).function
-        context = {'function_name': function_name}
 
-        return render(request,'members/social_login_succed.html',context)
-
-    return redirect('login_page')
-
+    return redirect('main_page')
 
 def login_page(request):
-
-    facebook_redirect_uri = 'https://maro5.com/members/facebook_login/'
-    kakaotalk_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
-    naver_redirect_uri = 'https://maro5.com/members/naver_login/'
-    google_redirect_uri = 'https://maro5.com/members/google_login/'
 
     # 런서버 중이면 로컬 호스트로 redirect 시케겠다.
     RUNSERVER = 'runserver' in sys.argv
@@ -104,6 +76,11 @@ def login_page(request):
         kakaotalk_redirect_uri = 'http://localhost:8000/members/kakaotalk_login/'
         naver_redirect_uri = 'http://localhost:8000/members/naver_login/'
         google_redirect_uri = 'http://localhost:8000/members/google_login/'
+    else:
+        facebook_redirect_uri = 'https://maro5.com/members/facebook_login/'
+        kakaotalk_redirect_uri = 'https://maro5.com/members/kakaotalk_login/'
+        naver_redirect_uri = 'https://maro5.com/members/naver_login/'
+        google_redirect_uri = 'https://maro5.com/members/google_login/'
 
     context = {"facebook_redirect_uri":facebook_redirect_uri,
                "fecebook_app_id":FACEBOOK_APP_ID,

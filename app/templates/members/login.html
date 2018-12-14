@@ -1,32 +1,23 @@
+{% extends '../base.html'%}
 {% load socialaccount %}
+{% block content %}
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-</head>
-<body>
+
 
         {% if user.is_authenticated %}
-        <span>{{user}}님이 로그인중입니다.</span>
-
         {% else %}
 
         <br>
         <br>
 
         <h1>##### 일반 login ####</h1>
-        <h2>Normal login test</h2>
         <div>
             <form action="{% url 'members:normal_login' %}" method="POST">
                 {% csrf_token %}
+                <input type="id" name = "username">
+                <input type="password" name = "password">
                 <button type="submit" class="btn btn-primary">normal login</button>
             </form>
         </div>
@@ -61,16 +52,7 @@
         <h1>##### allauth 이용한 login #####</h1>
         <a href="{% provider_login_url 'github' %}" class="btn btn-primary">Github login</a>
 
-
-
-        <h1>##### logout #####</h1>
-
-        <div>
-            <form action="{% url 'members:logout_view' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">normal logout</button>
-            </form>
-        </div>
         {% endif %}
-</body>
-</html>
+
+
+{% endblock %}
