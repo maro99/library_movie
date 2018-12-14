@@ -17,7 +17,7 @@ User = get_user_model()
 def normal_login(request):
 
     if request.method == 'POST':
-        return render(request, 'normal_login_succed.html')
+        return render(request, 'members/normal_login_succed.html')
 
     else:
         return render(request,'members/login.html')
@@ -35,7 +35,7 @@ def facebook_login(request):
         function_name = inspect.getframeinfo(frame).function
         context = {'function_name': function_name}
 
-        return render(request,'social_login_succed.html',context)
+        return render(request,'members/social_login_succed.html',context)
 
     return redirect('login_page')
 
@@ -51,7 +51,7 @@ def kakaotalk_login(request):
         function_name = inspect.getframeinfo(frame).function
         context = {'function_name': function_name}
 
-        return render(request,'social_login_succed.html',context)
+        return render(request,'members/social_login_succed.html',context)
 
     return redirect('login_page')
 
@@ -69,7 +69,7 @@ def naver_login(request):
         function_name = inspect.getframeinfo(frame).function
         context = {'function_name': function_name}
 
-        return render(request,'social_login_succed.html',context)
+        return render(request,'members/social_login_succed.html',context)
 
     return redirect('login_page')
 
@@ -85,7 +85,7 @@ def google_login(request):
         function_name = inspect.getframeinfo(frame).function
         context = {'function_name': function_name}
 
-        return render(request,'social_login_succed.html',context)
+        return render(request,'members/social_login_succed.html',context)
 
     return redirect('login_page')
 
