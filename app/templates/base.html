@@ -14,19 +14,23 @@
 <div class="container">
 
 
-        <h2><a href="{% url 'main_page' %}">동대문구 도서관 무료영화 관람정보 </a></h2>
+    <h2><a href="{% url 'main_page' %}">동대문구 도서관 무료영화 관람정보 </a></h2>
 
 
-    <div>
         {% if user.is_authenticated %}
 
-        <span>{{user}}로 로그인 중</span>
+        <div>{{user}}로 로그인 중</div>
 
-        <div>
+        <div style="float:left" >
             <form action="{% url 'members:logout_view' %}" method="POST">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary">normal logout</button>
+                <button type="submit" class="btn btn-primary" >logout</button>
             </form>
+        </div>
+
+        <div style="float:left">
+            <a href="{% url 'members:user_detail_page' %}" class="btn btn-primary">mypage</a>
+
         </div>
 
         {% else %}
@@ -34,7 +38,7 @@
         <a href="{% url 'members:signup_page' %}" class="btn btn-primary">회원가입</a>
         {% endif %}
 
-    </div>
+
     <div>
         {% block content %}
 

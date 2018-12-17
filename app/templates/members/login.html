@@ -12,7 +12,7 @@
         <br>
         <br>
 
-        <h1>##### 일반 login ####</h1>
+        <h1># 일반 login #</h1>
         <div>
             <form action="{% url 'members:normal_login' %}" method="POST">
                 {% csrf_token %}
@@ -23,8 +23,8 @@
         </div>
 
 
-        <h1>##### 개별 view이용한 social lgoin ####</h1>
-        <h2>Facebook login test</h2>
+        <h1># 개별 view이용한 social lgoin #</h1>
+        <h2>Facebook login </h2>
         <a href=" https://www.facebook.com/v3.0/dialog/oauth?
         client_id={{fecebook_app_id}}
         &redirect_uri={{facebook_redirect_uri}}
@@ -33,23 +33,23 @@
 
 
 
-        <h2>Kakao login test</h2>
+        <h2>Kakao login</h2>
         <a href="https://kauth.kakao.com/oauth/authorize?client_id={{kakaotalk_rest_api_key}}&redirect_uri={{kakaotalk_redirect_uri}}&response_type=code"
            class="btn btn-primary">kakaotalk login</a>
 
 
-        <h2>Naver login test</h2>
+        <h2>Naver login</h2>
         <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id={{naver_client_id}}&redirect_uri={{naver_redirect_uri}}&state=RAMDOM_STATE"
            class="btn btn-primary">Naver login</a>
 
 
-        <h2>Google login test</h2>
+        <h2>Google login </h2>
         <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.profile&redirect_uri={{google_redirect_uri}}&response_type=code&client_id={{google_client_id}}"
          class="btn btn-primary">Google login</a>
 
 
 
-        <h1>##### allauth 이용한 login #####</h1>
+        <h1># allauth github login #</h1>
         <a href="{% provider_login_url 'github' %}" class="btn btn-primary">Github login</a>
 
         {% endif %}

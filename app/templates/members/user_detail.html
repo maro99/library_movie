@@ -1,0 +1,20 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+        <br>
+        <br>
+
+        <h1># My page # </h1>
+
+        <div>
+
+            <a href="{% url 'members:user_info_change_page' %}" class="btn btn-primary">회원정보수정 </a>
+            <a href="{% url 'members:signup_page' %}" class="btn btn-primary">찜 목록</a>
+            <a href="{% url 'members:signup_page' %}" class="btn btn-primary">알람설정</a>
+
+
+        </div>
+
+
+{% endblock %}

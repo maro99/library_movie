@@ -10,7 +10,8 @@ urlpatterns = [
     path('logout_view/',views.logout_view, name='logout_view'),
     path('signup_page/', views.signup,name='signup_page'),
     path('activate/<str:uidb64>/<str:token>', views.user_activate, name='activate'),
-
+    path('user_detail_page/',views.user_detail_page,name='user_detail_page'),
+    path('user_info_change/',views.user_info_change_page,name='user_info_change_page'),
 
 
     path('facebook_login/', views.facebook_login, name='facebook_login'),

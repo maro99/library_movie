@@ -5,7 +5,7 @@
         <br>
         <br>
 
-        <h1>##### 회원가입 #####</h1>
+        <h1># 회원가입 #</h1>
         <div>
 
             <form action="{% url 'members:signup_page' %}" enctype="multipart/form-data" method="POST">
@@ -19,7 +19,7 @@
                     {{field.errors}}
                 </div>
                 {% endfor %}
-                <button type="submit">회원가입</button>
+                <button type="submit" class="btn btn-primary" style="float:right">회원가입</button>
             </form>
             
         </div>

@@ -1,0 +1,39 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+    <br>
+    <br>
+
+    <h1># User Info Change page # </h1>
+
+    <div>
+
+        <div>username: {{user.username}}</div>
+        <div>password
+            <form action="{% url 'members:logout_view' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" > 비밀번호 변경 </button>
+            </form>
+        </div>
+
+        <div>email: {{user.email}}
+            <form action="{% url 'members:logout_view' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" > 이메일 변경 </button>
+            </form>
+        </div>
+
+        <div>phone_number: {{user.phone_number}}
+            <form action="{% url 'members:logout_view' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" > 휴대폰번호 변경 </button>
+            </form>
+        </div>
+
+
+
+    </div>
+
+
+{% endblock %}
