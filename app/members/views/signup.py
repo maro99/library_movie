@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from requests import Response
+
+from members.forms import SignupForm
 from members.tokens import account_activation_token
 
 User = get_user_model()
@@ -15,23 +17,28 @@ from ..tasks import send_email
 
 def signup(request):
 
-
     if request.method =='POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-        phone_number = request.POST['phone_number']
-        user = User.objects.create_user(username=username,email=email,
-                                        phone_number=phone_number, password=password)
-        user.is_active = False
-        user.save()
 
-        send_email.delay(user.pk)
+        form = SignupForm(request.POST)
 
-        return render(request, 'members/email_sent_succeed.html')
+        # form에 들어있는 데이터가 유효한지 검사.(해당 form 클래스에서 정의한 데이터 형식에서 벋어나지 않는지 판단.)
+        if form.is_valid():
 
-    return render(request, 'members/signup.html')
+            user = form.signup() #signup 메소드는 form의 메소드 인데 form은 signupForm클래스의 인스턴스이다.
+
+            user.is_active = False
+            user.save()
+
+            send_email.delay(user.pk)
+
+            return render(request, 'members/email_sent_succeed.html')
+
+    else:
+        form = SignupForm()
+
+    context = {'form': form, }
+    return render(request, 'members/signup.html', context)
+
 
 def user_activate(request,uidb64,token):
 
