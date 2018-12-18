@@ -39,7 +39,7 @@ def send_email(pk):
     })
 
     # 이메일 전송 과정
-    mail_subject = 'test'
+    mail_subject = '도서관 영화 정보 페이지 회원가입 인증'
     to_email = user.email
     # EmailMessaage(제목, 본문, 받는이)
     email = EmailMessage(mail_subject, message, to=[to_email])
@@ -52,7 +52,7 @@ def send_password_change_email(pk,send_number):
     user = User.objects.get(pk=pk)
 
     # current_site = get_current_site(self.context['request']
-    message = render_to_string('members/password_change_email.html', {
+    message = render_to_string('members/user_info_change_email.html', {
         'user': user,
         'send_number':send_number,
     })

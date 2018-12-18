@@ -30,7 +30,11 @@ def user_password_change_page(request):
 
     user = request.user
 
-    context = None
+    context = {
+            "uid":None,
+            "token":None,
+            "password":None,
+        }
 
 
     if request.method == 'POST':
@@ -69,11 +73,10 @@ def user_password_change(request,uidb64,token,password):
     try:
         if user is not None and passwod_change_token.check_token(user, token,random_number):
             user.set_password(password)
-            print(password)
             user.save()
-            return HttpResponse(user.email + '비밀번호 변경이 완료되었습니다.')
+            return render(request, 'members/user_info_change_succeed_page.html')
         else:
-            return HttpResponse('만료된 링크입니다.')
+            return render(request, 'members/user_info_change_fail_page.html')
 
     except Exception as e:
         print(traceback.format_exc())
