@@ -47,7 +47,7 @@ def send_email(pk):
 
 
 @celery_app.task
-def send_password_change_email(pk,send_number):
+def send_info_change_email(pk,send_number,changed_email):
 
     user = User.objects.get(pk=pk)
 
@@ -58,8 +58,12 @@ def send_password_change_email(pk,send_number):
     })
 
     # 이메일 전송 과정
-    mail_subject = '도서관 영화 정보 페이지 비밀번호 변경 인증번호'
+    mail_subject = '도서관 영화 정보 페이지 회원정보 변경 인증번호'
     to_email = user.email
+
+    # 만약 이번 호출에 바뀐 이메일에 확인메일 보내야 한다면
+    if changed_email:
+        to_email = changed_email
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
 

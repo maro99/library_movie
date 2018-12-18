@@ -1,0 +1,31 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+
+        <br>
+        <br>
+
+        <h2># 이메일 변경 #</h2>
+        <div>
+            새 이메일
+            <form action="{% url 'members:user_email_change_page' %}" method="POST">
+                {% csrf_token %}
+                <input type="email" name = "email" value="{{email}}">
+                <button type="submit" class="btn btn-primary">인증 메일 전송 </button>
+            </form>
+        </div>
+
+
+        <div>
+            인증번호
+            <form action="{% url 'members:user_email_change' uidb64=uid token=token email=email %}" method="POST">
+                {% csrf_token %}
+                <input type="send_number" name = "send_number">
+                <button type="submit" class="btn btn-primary">인증번호 인증 </button>
+            </form>
+        </div>
+
+
+
+{% endblock %}

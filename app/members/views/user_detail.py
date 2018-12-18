@@ -8,7 +8,7 @@ import traceback
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 
-from members.tasks import send_password_change_email
+from members.tasks import send_info_change_email
 from members.tokens import passwod_change_token
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -47,7 +47,7 @@ def user_password_change_page(request):
 
         token = passwod_change_token.make_token(user,random_number)
 
-        send_password_change_email.delay(user.pk, random_number)
+        send_info_change_email.delay(user.pk, random_number)
 
         context = {
             "uid":uid,
@@ -73,6 +73,66 @@ def user_password_change(request,uidb64,token,password):
     try:
         if user is not None and passwod_change_token.check_token(user, token,random_number):
             user.set_password(password)
+            user.save()
+            return render(request, 'members/user_info_change_succeed_page.html')
+        else:
+            return render(request, 'members/user_info_change_fail_page.html')
+
+    except Exception as e:
+        print(traceback.format_exc())
+
+
+
+
+
+def user_email_change_page(request):
+
+    user = request.user
+
+    context = {
+            "uid":None,
+            "token":None,
+            "email":None,
+        }
+
+
+    if request.method == 'POST':
+
+
+        email = request.POST.get('email')
+        changed_email = email
+        email = urlsafe_base64_encode(force_bytes(email)).decode('utf-8')
+        uid = urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8')
+        random_number = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+
+        token = passwod_change_token.make_token(user,random_number)
+
+        send_info_change_email.delay(user.pk, random_number,changed_email)
+
+        context = {
+            "uid":uid,
+            "token":token,
+            "email":email,
+        }
+
+    return render(request, 'members/email_change.html',context)
+
+
+def user_email_change(request,uidb64,token,email):
+
+    random_number = request.POST.get('send_number')
+
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64.encode('utf-8')))
+        email  = force_text(urlsafe_base64_decode(email.encode('utf-8')))
+        user = User.objects.get(pk=uid)
+
+    except(TypeError.ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    try:
+        if user is not None and passwod_change_token.check_token(user, token,random_number):
+            user.email = email
             user.save()
             return render(request, 'members/user_info_change_succeed_page.html')
         else:
