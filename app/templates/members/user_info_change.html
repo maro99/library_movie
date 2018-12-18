@@ -10,12 +10,15 @@
     <div>
 
         <div>username: {{user.username}}</div>
-        <div>password
-            <form action="{% url 'members:logout_view' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary" > 비밀번호 변경 </button>
-            </form>
-        </div>
+
+        {% if user.password %}
+            <div>password
+                <form action="{% url 'members:user_password_change_page' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" > 비밀번호 변경 </button>
+                </form>
+            </div>
+        {% endif %}
 
         <div>email: {{user.email}}
             <form action="{% url 'members:logout_view' %}" method="POST">

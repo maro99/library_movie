@@ -27,9 +27,6 @@ def send_email(pk):
     else:
         domain = "maro5.com"
 
-    print(sys.argv)
-    print('hello world')
-
 
     user = User.objects.get(pk=pk)
 
@@ -47,6 +44,25 @@ def send_email(pk):
     # EmailMessaage(제목, 본문, 받는이)
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
+
+
+@celery_app.task
+def send_password_change_email(pk,send_number):
+
+    user = User.objects.get(pk=pk)
+
+    # current_site = get_current_site(self.context['request']
+    message = render_to_string('members/password_change_email.html', {
+        'user': user,
+        'send_number':send_number,
+    })
+
+    # 이메일 전송 과정
+    mail_subject = '도서관 영화 정보 페이지 비밀번호 변경 인증번호'
+    to_email = user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
 
 
 # celery-beat tutorial 따라한것.
