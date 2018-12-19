@@ -1,0 +1,31 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+
+        <br>
+        <br>
+
+        <h2># 휴대폰번호 변경 #</h2>
+        <div>
+            새 휴대폰번호
+            <form action="{% url 'members:user_phone_number_change_page' %}" method="POST">
+                {% csrf_token %}
+                <input type="phone_number" name = "phone_number" value="{{phone_number}}">
+                <button type="submit" class="btn btn-primary">인증 메일 전송 </button>
+            </form>
+        </div>
+
+
+        <div>
+            인증번호
+            <form action="{% url 'members:user_phone_number_change' uidb64=uid token=token phone_number=phone_number %}" method="POST">
+                {% csrf_token %}
+                <input type="send_number" name = "send_number">
+                <button type="submit" class="btn btn-primary">인증번호 인증 </button>
+            </form>
+        </div>
+
+
+
+{% endblock %}

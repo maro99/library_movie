@@ -86,16 +86,14 @@ class SignupForm(forms.Form):
 
         data = self.cleaned_data['phone_number']
 
-        data_type_mask = ['0','0','0','-','0','0','0','0','-','0','0','0','0']
-
         for index,number in enumerate(data):
-            # 해당 자리수에서 데이터 타입 다르면
-            if data_type_mask[index].isdigit() != number.isdigit():
-                raise forms.ValidationError('010-xxxx-xxxx 형식에 맞게 번호를 입력해주세요')
+            # 해당 자리수에서 데이터 타입이 숫자가 아니면
+            if number.isdigit() == False :
+                raise forms.ValidationError('- 없이 숫자만 입력해 주세요')
 
-            # -의 경우 타입 같더라도 - 외의 기호 들어가면
-            if number == False and number !='-':
-                raise forms.ValidationError('010-xxxx-xxxx 형식에 맞게 번호를 입력해주세요')
+        # 자리수가 10~11자 아니면
+        if len(data)!=10 and len(data)!=11:
+            raise forms.ValidationError('010aaaabbbb 형식에 맞게 번호를 입력해주세요')
 
         return data
 

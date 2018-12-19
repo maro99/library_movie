@@ -22,4 +22,8 @@ urlpatterns = [
     path('user_password_change/<str:uidb64>/<str:token>/<str:password>', views.user_password_change, name='user_password_change'),
     path('user_email_change_page/', views.user_email_change_page, name='user_email_change_page'),
     path('user_email_change/<str:uidb64>/<str:token>/<str:email>', views.user_email_change,name='user_email_change'),
+    path('user_phone_number_change_page/', views.user_phone_number_change_page, name='user_phone_number_change_page'),
+    path('user_phone_number_change/<str:uidb64>/<str:token>/<str:phone_number>', views.user_phone_number_change, name='user_phone_number_change'),
+
+
 ]
