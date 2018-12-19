@@ -89,10 +89,16 @@ def user_email_change_page(request):
 
     user = request.user
 
+    if user.email:                        # 입력창에 미리 보여줄 email
+        email_decoded = user.email        # 유저가 이메일 있으면 ~없으면 셈플 보여줌.
+    else:
+        email_decoded = "example.google.com"
+
     context = {
             "uid":None,
             "token":None,
             "email":None,
+            "email_decoded":email_decoded,      # 입력창에 미리 보여주기 위함.
         }
 
 
@@ -113,6 +119,7 @@ def user_email_change_page(request):
             "uid":uid,
             "token":token,
             "email":email,
+            "email_decoded": changed_email,   # 인증번호 전송 후 입력창에 보여줄 내용
         }
 
     return render(request, 'members/email_change.html',context)
@@ -151,10 +158,16 @@ def user_phone_number_change_page(request):
 
     user = request.user
 
+    if user.phone_number:
+        phone_number_decoded = user.phone_number
+    else:
+        phone_number_decoded = "01011112222"
+
     context = {
             "uid":None,
             "token":None,
             "phone_number":None,
+            "phone_number_decoded": phone_number_decoded,  # 입력창에 미리 보여주기 위함.
         }
 
     if request.method == 'POST':
@@ -173,6 +186,7 @@ def user_phone_number_change_page(request):
             "uid":uid,
             "token":token,
             "phone_number":phone_number,
+            "phone_number_decoded": changed_phone_number,
         }
 
     return render(request, 'members/phone_number_change.html',context)

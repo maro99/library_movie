@@ -11,7 +11,7 @@
             새 이메일
             <form action="{% url 'members:user_email_change_page' %}" method="POST">
                 {% csrf_token %}
-                <input type="email" name = "email" value="{{email}}">
+                <input type="email" name = "email" value="{{email_decoded}}">
                 <button type="submit" class="btn btn-primary">인증 메일 전송 </button>
             </form>
         </div>
