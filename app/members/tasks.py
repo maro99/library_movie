@@ -53,7 +53,7 @@ def send_email(pk):
 
 
 @celery_app.task
-def send_info_change_email(pk,send_number,changed_email):
+def send_info_change_email(pk,send_number,changed_email=None):
 
     user = User.objects.get(pk=pk)
 
