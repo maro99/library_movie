@@ -11,4 +11,6 @@ urlpatterns = [
     path('auth-test/', apis.AuthenticationTest.as_view()),
     path('signup/', apis.Signup.as_view()),
     path('activate/<str:uidb64>/<str:token>', apis.UserActivate.as_view(), name='activate'),
+
+    path('user_detail_page/', apis.UserDetailView.as_view(), name='user_detail_page'),
 ]

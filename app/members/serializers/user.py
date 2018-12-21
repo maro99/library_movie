@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
-from .tasks import send_email
+from ..tasks import send_email
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
