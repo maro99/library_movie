@@ -49,10 +49,10 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('패스워드 최소 8자 이상이어야 합니다.')
         return value
 
-    # def validate_email(self,value):
-    #     if User.objects.filter(email=value).exists():
-    #         raise serializers.ValidationError('이메일이 이미 존재합니다')
-    #     return value
+    def validate_email(self,value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('이메일이 이미 존재합니다')
+        return value
 
     # 여러 필드에 걸처서 유효성 검사시
     # validate(attrs)
