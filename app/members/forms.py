@@ -86,6 +86,9 @@ class SignupForm(forms.Form):
 
         data = self.cleaned_data['phone_number']
 
+        if User.objects.filter(phone_number=data).exists():
+            raise forms.ValidationError('같은 휴대전화번호가 존재합니다.')
+
         for index,number in enumerate(data):
             # 해당 자리수에서 데이터 타입이 숫자가 아니면
             if number.isdigit() == False :

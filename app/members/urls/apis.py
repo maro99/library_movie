@@ -15,5 +15,7 @@ urlpatterns = [
     path('user-info-change-page', apis.UserInfoChangePageView.as_view(), name='user-info-change-page'),
     path('user-info-change-page/password-change', apis.UserChangePasswordView.as_view(), name='user-password-change'),
     path('user-info-change-page/email-change', apis.UserChangeEmailView.as_view(), name='user-email-change'),
+    path('user-info-change-page/phone-number-change',
+         apis.UserChangePhoneNumberView.as_view(), name='user-phone-number--change'),
 
 ]

@@ -1,5 +1,8 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as Validoation_Core_Error
 
 from django.contrib.auth import get_user_model
+from django.core.validators import EmailValidator
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -47,12 +50,53 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         if len(value) < 8:
             raise serializers.ValidationError('패스워드 최소 8자 이상이어야 합니다.')
+
+
+        errors = dict()
+
+        try:
+            # 이걸로 규칙 유효한지 검사해보는듯. 1234등 부적절한거 거르는듯.
+            validate_password(password=value)
+
+        except serializers.ValidationError as e:
+            errors['password'] = list(e.messages)
+            print(errors)
+
+        if errors:
+            raise serializers.ValidationError(errors)
         return value
 
     def validate_email(self,value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError('이메일이 이미 존재합니다')
+
+        errors = dict()
+        validator = EmailValidator()
+        try:
+            validator(value)
+        except Validoation_Core_Error as e :
+            errors['email'] = list(e.message)
+            print(errors)
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
         return value
+
+    def validate_phone_number(self,phone_number):
+        if User.objects.filter(phone_number=phone_number).exists():
+            raise serializers.ValidationError('휴대전화번호가 이미 존재합니다')
+
+        for index,number in enumerate(phone_number):
+            # 해당 자리수에서 데이터 타입이 숫자가 아니면
+            if number.isdigit() == False :
+                raise serializers.ValidationError('- 없이 숫자만 입력해 주세요')
+
+        # 자리수가 10~11자 아니면
+        if len(phone_number)!=10 and len(phone_number)!=11:
+            raise serializers.ValidationError('010aaaabbbb 형식에 맞게 번호를 입력해주세요')
+
+        return phone_number
 
     # 여러 필드에 걸처서 유효성 검사시
     # validate(attrs)

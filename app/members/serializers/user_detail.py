@@ -71,7 +71,6 @@ class ChangeEmailSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError('이메일이 이미 존재합니다')
 
-
         errors = dict()
         validator = EmailValidator()
         try:
@@ -84,3 +83,28 @@ class ChangeEmailSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(errors)
 
         return email
+
+
+class ChangePhoneNumberSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = (
+            'phone_number',
+        )
+
+    # 1.일치하는 메일 이 있는지 검사.
+    def validate_phone_number(self,phone_number):
+        if User.objects.filter(phone_number=phone_number).exists():
+            raise serializers.ValidationError('휴대폰번호가 이미 존재합니다')
+
+        for number in phone_number:
+            if number.isdigit() == False:
+                raise serializers.ValidationError('-없이 숫자만 입력해 주세요')
+
+        if len(phone_number)!=10 and len(phone_number)!=11:
+            raise serializers.ValidationError('010222223333 형식에 맞게 번호를 입력해주세요.')
+
+        return phone_number
+

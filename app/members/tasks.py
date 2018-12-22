@@ -77,7 +77,7 @@ def send_info_change_email(pk,send_number,changed_email=None):
 
 
 @celery_app.task
-def send_sms(pk, send_number,changed_phone_number):
+def send_sms(pk, send_number,changed_phone_number=None):
 
     user = User.objects.get(pk=pk)
     if changed_phone_number:
