@@ -177,12 +177,12 @@ class UserChangePhoneNumberView(APIView):
 
             changed_phone_number = serializer.validated_data['phone_number']
             random_number = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
-            changed_phone_number_token = passwod_change_token.make_token(user,random_number)
+            change_phone_number_token = passwod_change_token.make_token(user,random_number)
             send_sms.delay(user.pk, random_number,changed_phone_number)
 
             # 추후 인증번호 검증시 필요한 token 같이 반환해줌.
             data = {
-                'changed_phone_number_token': changed_phone_number_token,
+                'change_phone_number_token': change_phone_number_token,
                 'detail': '인증번호가 발송되었습니다.',
             }
 
@@ -203,10 +203,10 @@ class UserChangePhoneNumberView(APIView):
 
             user = User.objects.get(username=request.user)
             random_number = request.data.get('random_number')
-            changed_phone_number_token = request.data.get('changed_phone_number_token')
+            change_phone_number_token = request.data.get('change_phone_number_token')
             phone_number = serializer.validated_data['phone_number']
 
-            if passwod_change_token.check_token(user, changed_phone_number_token,random_number):
+            if passwod_change_token.check_token(user, change_phone_number_token,random_number):
                 user.phone_number = phone_number
                 user.save()
                 data = {

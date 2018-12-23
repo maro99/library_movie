@@ -616,22 +616,22 @@ def main_movie_crawler():
 
     #### 성동구 크롤러 #####
 
-    seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
-    # 성동구립,용답, 장안, 성수, 금호,청계
-#     seongdonggu_area_code_list = ['SD']
+#     seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
+#     # 성동구립,용답, 장안, 성수, 금호,청계
+# #     seongdonggu_area_code_list = ['SD']
+#
+#     for area_code in seongdonggu_area_code_list:
+#         seongdonggu_movie_crawler(area_code,year)
+#         print(f'{area_code}#############################################################################################################################')
+#
 
-    for area_code in seongdonggu_area_code_list:
-        seongdonggu_movie_crawler(area_code,year)
-        print(f'{area_code}#############################################################################################################################')
-
-
-    ##### 광진구 크롤러 #####
-    gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
-#     정보 , 중곡문화체육센터, 구의제3동
-    for area_code in gwangjingu_area_code_list:
-        gwangjingu_movie_crawler(area_code,year,month)
-        print(f'{area_code}#############################################################################################################################')
-
+#     ##### 광진구 크롤러 #####
+#     gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
+# #     정보 , 중곡문화체육센터, 구의제3동
+#     for area_code in gwangjingu_area_code_list:
+#         gwangjingu_movie_crawler(area_code,year,month)
+#         print(f'{area_code}#############################################################################################################################')
+#
 
 
     # 위에서 크롤링한 movie들의 extra 정보들을 update하는 함수 호출한다.
