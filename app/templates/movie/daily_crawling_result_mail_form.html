@@ -1,0 +1,58 @@
+
+1. 업데이트된 영화
+
+{% for key, value in dict_log.updated_movie.items %}
+    지역 : {{key}}
+
+    영화 수 : {{value.num}}
+
+    목록 :
+
+        {% for movie in value.list %}
+            {{movie}}
+        {% endfor %}
+
+{% endfor %}
+
+
+2. 네이버 검색 실패한 영화
+
+{% for key, value in dict_log.no_extra_info_movie.items %}
+    지역 : {{key}}
+
+    영화 수 : {{value.num}}
+
+    목록 :
+
+        {% for movie in value.list %}
+            {{movie}}
+        {% endfor %}
+
+{% endfor %}
+
+
+3. 기간(현제월 앞뒤한달) 벋어나서 삭제한 영화
+
+{% for key, value in dict_log.deleted_movie.items %}
+    지역 : {{key}}
+
+    영화 수 : {{value.num}}
+
+    목록 :
+
+        {% for movie in value.list %}
+            {{movie}}
+        {% endfor %}
+
+{% endfor %}
+
+4.전체 영화 총계
+
+{% for key, value in dict_log.total_movie.items %}
+    지역 : {{key}}
+
+    전 월 : {{value.before}}
+    현제 월 : {{value.now}}
+    이전 월 : {{value.after}}
+
+{% endfor %}
