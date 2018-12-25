@@ -47,7 +47,7 @@ app.conf.beat_schedule = {
     # },
     'add-every-minute-contrab': {
         'task': 'crawling_then_send_result_email',
-        'schedule': crontab(minute=52, hour=23),
+        'schedule': crontab(minute=52, hour=0),
         'args': (),
     },
 }

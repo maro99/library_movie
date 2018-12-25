@@ -18,7 +18,7 @@ User = get_user_model()
 def crawling_then_send_result_email():
 
     # 지역 없으면 지역정보 부터 업데이트
-    if District.objects.all() == None:
+    if not District.objects.all() :
         get_info()
 
     # 영화 크롤링
