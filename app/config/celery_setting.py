@@ -30,19 +30,24 @@ def debug_task(self):
 from celery.schedules import crontab
 
 app.conf.beat_schedule = {
-    'add-every-minute-contrab': {
-        'task': 'multiply_two_numbers',
-        'schedule': crontab(),  # 1분마다
-        'args': (16, 16),
-    },
-    'add-every-5-seconds': {
-        'task': 'sum_two_numbers',
-        'schedule': 5.0,  # 5초마다
-        'args': (16,16)
-    },
+    # 'add-every-minute-contrab': {
+    #     'task': 'multiply_two_numbers',
+    #     'schedule': crontab(),  # 1분마다
+    #     'args': (16, 16),
+    # },
+    # 'add-every-5-seconds': {
+    #     'task': 'sum_two_numbers',
+    #     'schedule': 5.0,  # 5초마다
+    #     'args': (16,16)
+    # },
     # 'add-every-30-seconds': {
     #     'task': 'tasks.add',
     #     'schedule': 30.0, # 30초마다
     #     'args': (16, 16)
     # },
+    'add-every-minute-contrab': {
+        'task': 'crawling_then_send_result_email',
+        'schedule': crontab(minute=52, hour=23),
+        'args': (),
+    },
 }

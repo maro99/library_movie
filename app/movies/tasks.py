@@ -14,7 +14,7 @@ from movies.utils import *
 
 User = get_user_model()
 
-@celery_app.task
+@celery_app.task(name="crawling_then_send_result_email")
 def crawling_then_send_result_email():
 
     # 지역 없으면 지역정보 부터 업데이트
