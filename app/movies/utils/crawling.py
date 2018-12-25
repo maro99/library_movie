@@ -17,6 +17,64 @@ import urllib.request as req
 import datetime
 from urllib import parse
 
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+
+
+# 상영일 저장 기준 위한 변수들
+
+# 당월 뽑기.
+now_date =  datetime.datetime.now()
+now_date_str = datetime.datetime.now().strftime('%Y-%m')
+
+# 당월의 첫날 뽑기
+now_year_str, now_month_str = now_date_str.split('-')
+now_months_first_day =  datetime.datetime.strptime(f'{now_year_str}-{now_month_str}','%Y-%m')
+now_months_first_day_aware = timezone.make_aware(now_months_first_day)
+
+# 전월의 첫날 뽑기
+before_months_first_day = now_months_first_day - relativedelta(months=1)
+before_months_first_day_aware = timezone.make_aware(before_months_first_day)
+
+
+# 다음월의 첫날 뽑기
+after_months_first_day = now_months_first_day + relativedelta(months=1)
+after_months_first_day_aware = timezone.make_aware(after_months_first_day)
+
+# 다음월의 마지막날 뽑기
+after_months_last_day = now_months_first_day + relativedelta(months=2) - datetime.timedelta(days=1)
+after_months_last_day_aware = timezone.make_aware(after_months_last_day)
+
+
+
+# Dict log # 크롤링 결과 담는 dict
+
+
+dict_log = {
+    "updated_movie": {
+        "동대문구": {"num": 0,"list": []},
+        "성동구": {"num": 0,"list": []},
+        "광진구": {"num": 0,"list": []},
+    },
+    "no_extra_info_movie" : {
+        "동대문구":{"num":0,"list":[]},
+        "성동구":{"num":0,"list":[]},
+        "광진구": {"num": 0,"list": []},
+    },
+    "deleted_movie": {
+        "동대문구":{"num":0,"list":[]},
+        "성동구":{"num":0,"list":[]},
+        "광진구": {"num": 0,"list": []},
+    },
+    "total_movie": {
+        "동대문구": {"before": 0, "now": 0, "after": 0},
+        "성동구": {"before": 0, "now": 0, "after": 0},
+        "광진구": {"before": 0, "now": 0, "after": 0},
+    },
+}
+
+
+
 
 # 영화 제목
 # 일시
@@ -134,14 +192,17 @@ def dongdaemungu_movie_crawler(year,libGroup):
         library = Library.objects.get(library_code=libGroup)
         print(library)
 
-        movie,movie_created_bool = Movie.objects.get_or_create(
-            library = library,
-            title = title,
-            when = dt,
-            place = place,
-            runtime = runtime,
-            thumbnail_url = pic_url
-        )
+        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+        if dt >= before_months_first_day and dt <= after_months_last_day:
+            movie,movie_created_bool = Movie.objects.get_or_create(
+                library = library,
+                title = title,
+                when = dt,
+                place = place,
+                runtime = runtime,
+                thumbnail_url = pic_url
+            )
 
 
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
@@ -210,14 +271,15 @@ def seongdonggu_movie_crawler(area_code, year):
             library = Library.objects.get(library_code=area_code)
             print(library)
 
-            movie, movie_created_bool = Movie.objects.get_or_create(
-                library=library,
-                title=title,
-                when=dt,
-                place=place,
-                runtime=runtime,
-                thumbnail_url=pic_url,
-            )
+            if dt >= before_months_first_day and dt <= after_months_last_day:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                    thumbnail_url=pic_url,
+                )
 
             print('@@@@@@@@@@@@@@@@@@@@@@@@@')
 
@@ -297,14 +359,15 @@ def gwangjingu_movie_crawler(area_code, year, month):
             library = Library.objects.get(library_code=area_code)
             print(library)
 
-            movie, movie_created_bool = Movie.objects.get_or_create(
-                library=library,
-                title=title,
-                when=dt,
-                place=place,
-                runtime=runtime,
-                thumbnail_url=pic_url
-            )
+            if dt >= before_months_first_day and dt <= after_months_last_day:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                    thumbnail_url=pic_url
+                )
 
     #         pass
 
@@ -382,14 +445,15 @@ def gwangjingu_movie_crawler(area_code, year, month):
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                movie, movie_created_bool = Movie.objects.get_or_create(
-                    library=library,
-                    title=title,
-                    when=dt,
-                    place=place,
-                    runtime=runtime,
-                    thumbnail_url=pic_url
-                )
+                if dt >= before_months_first_day and dt <= after_months_last_day:
+                    movie, movie_created_bool = Movie.objects.get_or_create(
+                        library=library,
+                        title=title,
+                        when=dt,
+                        place=place,
+                        runtime=runtime,
+                        thumbnail_url=pic_url
+                    )
 
 
 
@@ -489,14 +553,15 @@ def gwangjingu_movie_crawler(area_code, year, month):
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                movie, movie_created_bool = Movie.objects.get_or_create(
-                    library=library,
-                    title=title,
-                    when=dt,
-                    place=place,
-                    runtime=runtime,
-                    thumbnail_url=pic_url
-                )
+                if dt >= before_months_first_day and dt <= after_months_last_day:
+                    movie, movie_created_bool = Movie.objects.get_or_create(
+                        library=library,
+                        title=title,
+                        when=dt,
+                        place=place,
+                        runtime=runtime,
+                        thumbnail_url=pic_url
+                    )
 
 
 #             구의제3동도서관에서는 '문화가 있는 날'을 맞아 무료영화 상영을 통해 관내 주민의 문화생활 및 여가활용에 이바지 하고자합니다.
@@ -530,6 +595,10 @@ def get_extra_info(movie,title):
 
     # 만약 아무것도 검색 결과 없다면 None 입력되고 아래 if문 못들어감.
     detail_url_pre = soup.select_one('ul.search_list_1 > li > dl > dt > a')
+
+    # 이번 크롤링 회차에 저장되는 영화 검색 되던말든 일단 이름 저장.
+    dict_log["updated_movie"][movie.library.library_district.district_name]["num"] += 1
+    dict_log["updated_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
 
     if detail_url_pre:
         pic_url =""
@@ -594,9 +663,13 @@ def get_extra_info(movie,title):
         movie.story = story
         movie.save()
 
+    else:
+        dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["num"]+=1
+        dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
 
 
 def main_movie_crawler():
+
     # 오늘 날짜 먼저 가져옴
     now = datetime.datetime.now()
     year = now.year
@@ -614,28 +687,54 @@ def main_movie_crawler():
         print(
             f'{libGroup} #####################################################################################################################################')
 
-    #### 성동구 크롤러 #####
+    ### 성동구 크롤러 #####
 
-#     seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
-#     # 성동구립,용답, 장안, 성수, 금호,청계
-# #     seongdonggu_area_code_list = ['SD']
-#
-#     for area_code in seongdonggu_area_code_list:
-#         seongdonggu_movie_crawler(area_code,year)
-#         print(f'{area_code}#############################################################################################################################')
-#
+    seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
+    # 성동구립,용답, 장안, 성수, 금호,청계
+#     seongdonggu_area_code_list = ['SD']
+
+    for area_code in seongdonggu_area_code_list:
+        seongdonggu_movie_crawler(area_code,year)
+        print(f'{area_code}#############################################################################################################################')
+
 
 #     ##### 광진구 크롤러 #####
-#     gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
-# #     정보 , 중곡문화체육센터, 구의제3동
-#     for area_code in gwangjingu_area_code_list:
-#         gwangjingu_movie_crawler(area_code,year,month)
-#         print(f'{area_code}#############################################################################################################################')
-#
+    gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
+#     정보 , 중곡문화체육센터, 구의제3동
+    for area_code in gwangjingu_area_code_list:
+        gwangjingu_movie_crawler(area_code,year,month)
+        print(f'{area_code}#############################################################################################################################')
+
+
+    # 현제시간 - 5분
+    now_date_before_5_min = timezone.now() - timezone.timedelta(minutes=5)
+
+    # 상영시간 naive한 datetime으로 변환
 
 
     # 위에서 크롤링한 movie들의 extra 정보들을 update하는 함수 호출한다.
-
     for movie in Movie.objects.all():
-        title = movie.title
-        get_extra_info(movie, title)
+
+        # 초벌 크롤링시 저장된 시간이 현제시간 -5분 보다 큰것(이후인것) 들만 업데이트 함수 적용시키겠다.
+        if movie.created_at  > now_date_before_5_min:
+            title = movie.title
+            get_extra_info(movie, title)
+
+        # 삭제될 영화 타이틀 로그에 저장
+        if not movie.when >= before_months_first_day_aware and movie.when <= after_months_last_day_aware:
+            dict_log["deleted_movie"][movie.library.library_district.district_name]["num"] += 1
+            dict_log["deleted_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
+
+        # 토탈 영화 갯수 구별로 달끊어서 로그 저장.
+        # 이전월의첫날 <= 상영일 <= 다음월 마지막달 인 영화 count
+        elif (movie.when >= before_months_first_day_aware) and (movie.when < now_months_first_day_aware):
+            dict_log["total_movie"][movie.library.library_district.district_name]["before"] += 1
+
+        elif (movie.when >= now_months_first_day_aware) and (movie.when < after_months_first_day_aware):
+            dict_log["total_movie"][movie.library.library_district.district_name]["now"] += 1
+
+        elif (movie.when >= after_months_first_day_aware) and (movie.when <= after_months_last_day_aware):
+            dict_log["total_movie"][movie.library.library_district.district_name]["after"] += 1
+
+    return dict_log
+

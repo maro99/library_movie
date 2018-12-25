@@ -18,3 +18,6 @@ class Movie (models.Model):
     age = models.CharField(max_length=200, blank=True)
     rating = models.FloatField(default=0, blank=True)
     genre = models.CharField(max_length=200, blank=True)
+
+    # 생성일 추가
+    created_at = models.DateTimeField(auto_now_add=True)
