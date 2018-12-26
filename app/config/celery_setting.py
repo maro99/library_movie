@@ -2,10 +2,23 @@
 
 from __future__ import absolute_import, unicode_literals
 import os
+import sys
+
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
+
+# 설정 파일 변경 위한것.
+# 이부분 local때 잘 적용되는지 테스트 안해봤으니
+# dev모드, local에서 if안으로 잘 들어가나보자. -> 잘안되면 redis가 local이 아닐 것임.
+if '/home/nasanmaro/.local/share/virtualenvs/library_movie-hgMtabiI/bin/celery' in sys.argv:
+    setting_file = 'config.settings.local'
+else:
+    setting_file = 'config.settings.production'
+
+
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', setting_file)
 
 app = Celery('config')
 
@@ -47,7 +60,7 @@ app.conf.beat_schedule = {
     # },
     'add-every-minute-contrab': {
         'task': 'crawling_then_send_result_email',
-        'schedule': crontab(minute=52, hour=0),
+        'schedule': crontab(minute=0, hour=7),
         'args': (),
     },
 }
