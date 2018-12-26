@@ -613,9 +613,16 @@ def get_extra_info(movie,title):
 
         soup = get_soup(detail_url)
 
+        # 포스터 이미지
         pic_url_pre = soup.select_one('div.poster > a > img')
         if pic_url_pre:
             pic_url = pic_url_pre.get('src')
+            print(f'pic_url: {pic_url}')
+
+        # 포토가 있는 경우에는 포토 의 맨앞에거 가져다 쓰고싶다.
+        pic_viewer_url_pre = soup.select_one('div.viewer_img >  img')
+        if pic_viewer_url_pre:
+            pic_url = pic_viewer_url_pre.get('src')
             print(f'pic_url: {pic_url}')
 
         rating_pre = soup.select_one('div.mv_info > div.main_score > div.score.score_left > div.star_score > a')
@@ -652,9 +659,14 @@ def get_extra_info(movie,title):
             story = story_pre.get_text()
             print(f'story: {story}')
 
-        # 썸네일이 이미 없는 경우에만 업데이트를 하자
-        if movie.thumbnail_url == "":
-            movie.thumbnail_url = pic_url
+        # # 썸네일이 이미 없는 경우에만 업데이트를 하자 ------> 일단 안지우겠슴.
+        # if movie.thumbnail_url == "":
+        #     movie.thumbnail_url = pic_url
+
+        # 썸네일 네이버 검색 이미지 -> 뷰어이미지 첫번째거로 통일 시키겠다.
+        # 무조건 업데이트 하겠슴.(검색 안되는데 섬네일 있는경우는 여기 아예 안들언옴)
+        movie.thumbnail_url = pic_url
+
 
         movie.rating = float(rating)
         movie.genre = genre

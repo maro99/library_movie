@@ -3,5 +3,27 @@
 
 {% block content %}
 
+<div class="container">
+    <div class="row">
+        {% for movie in movies %}
+        <div class="col-4 mb-3">
+        <div class="card-img-top" style="height: 177px; width: 309px; background-image: url('{{movie.thumbnail_url}}'); background-size: cover;"></div>
+            <div class="card-body">
+                <h5 class="card-title">{{movie.title}}</h5>
+                <p class="card-text">{{movie.when}}</p>
+            </div>
+            
+        </div>
+        {% endfor %}
+         
+        
+    </div>
+</div>
 
 {% endblock %}
+
+
+
+
+
+
