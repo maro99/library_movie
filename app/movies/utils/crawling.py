@@ -594,13 +594,16 @@ def get_extra_info(movie,title):
     soup = get_soup(url)
 
     # 만약 아무것도 검색 결과 없다면 None 입력되고 아래 if문 못들어감.
-    detail_url_pre = soup.select_one('ul.search_list_1 > li > dl > dt > a')
+    # detail_url_pre = soup.select_one('ul.search_list_1 > li > dl > dt > a') 이전 맨앞에꺼 뽑던 코드.(일단 주석처리함 )
+    detail_url_pre = soup.select('ul.search_list_1 > li > dl > dd.point > em.cuser_cnt')
 
     # 이번 크롤링 회차에 저장되는 영화 검색 되던말든 일단 이름 저장.
     dict_log["updated_movie"][movie.library.library_district.district_name]["num"] += 1
     dict_log["updated_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
 
     if detail_url_pre:
+
+        # 모델 객체 저장할 값들 초기화
         pic_url =""
         rating = 0
         genre = ""
@@ -608,8 +611,24 @@ def get_extra_info(movie,title):
         age =""
         story =""
 
+        # 이하는 검색 결과 중 가장 많이본 영화 테그 착기 위함.
+        max_num = 0
+        max_num_rated_movies_line1 = detail_url_pre[0]  # 일단 맨앞 line저장
+        for line1 in detail_url_pre:
+            #         print(line1) # 여기기준  이웃 , 부모 테그 타고가서 링크 얻자.
+            text_pre = line1.get_text()
+            number_of_rated_people = re.findall("(\d+)", text_pre)[0]
+            #         print(number_of_rated_people)
+            if max_num <= int(number_of_rated_people):
+                max_num = int(number_of_rated_people)
+                max_num_rated_movies_line1 = line1
+
+        parent_tag = max_num_rated_movies_line1.parent
+        dt_tag_as_previous_tag = parent_tag.find_previous_sibling("dt")
+        a_tag = dt_tag_as_previous_tag.select_one('a')
+
         # detail로 가는 url
-        detail_url = 'https://movie.naver.com' + detail_url_pre.get('href')
+        detail_url = 'https://movie.naver.com' + a_tag.get('href')
 
         soup = get_soup(detail_url)
 
