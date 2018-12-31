@@ -201,7 +201,7 @@ def dongdaemungu_movie_crawler(year,libGroup):
                 when = dt,
                 place = place,
                 runtime = runtime,
-                thumbnail_url = pic_url
+                # thumbnail_url = pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
             )
 
 
@@ -278,7 +278,7 @@ def seongdonggu_movie_crawler(area_code, year):
                     when=dt,
                     place=place,
                     runtime=runtime,
-                    thumbnail_url=pic_url,
+                    # thumbnail_url=pic_url,  #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
                 )
 
             print('@@@@@@@@@@@@@@@@@@@@@@@@@')
@@ -366,7 +366,7 @@ def gwangjingu_movie_crawler(area_code, year, month):
                     when=dt,
                     place=place,
                     runtime=runtime,
-                    thumbnail_url=pic_url
+                    # thumbnail_url=pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
                 )
 
     #         pass
@@ -452,7 +452,7 @@ def gwangjingu_movie_crawler(area_code, year, month):
                         when=dt,
                         place=place,
                         runtime=runtime,
-                        thumbnail_url=pic_url
+                        # thumbnail_url=pic_url   #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
                     )
 
 
@@ -560,7 +560,7 @@ def gwangjingu_movie_crawler(area_code, year, month):
                         when=dt,
                         place=place,
                         runtime=runtime,
-                        thumbnail_url=pic_url
+                        # thumbnail_url=pic_url  #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
                     )
 
 
@@ -683,8 +683,8 @@ def get_extra_info(movie,title):
         #     movie.thumbnail_url = pic_url
 
         # 썸네일 네이버 검색 이미지 -> 뷰어이미지 첫번째거로 통일 시키겠다.
-        # 무조건 업데이트 하겠슴.(검색 안되는데 섬네일 있는경우는 여기 아예 안들언옴)
-        movie.thumbnail_url = pic_url
+        # 무조건 업데이트 하겠슴.(검색 안되는데 섬네일 있는경우는 여기 아예 안들언옴) ---> 12.31/ get_or_create시 계속 중복 생성해서 걍 무조건 여기서 업데이트 하겠슴.
+        movie.thumbnail_url = pic_url                                         # 검색 안되는것 추후 구글검색 첫이미지로 업데이트 시키겠다.
 
 
         movie.rating = float(rating)
