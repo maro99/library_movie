@@ -686,6 +686,10 @@ def get_extra_info(movie,title):
         # 무조건 업데이트 하겠슴.(검색 안되는데 섬네일 있는경우는 여기 아예 안들언옴) ---> 12.31/ get_or_create시 계속 중복 생성해서 걍 무조건 여기서 업데이트 하겠슴.
         movie.thumbnail_url = pic_url                                         # 검색 안되는것 추후 구글검색 첫이미지로 업데이트 시키겠다.
 
+        # 수지윙의 세계의 경우 네이버 영화 에서 검색은 되지만 섬네일 없다.
+        # 이런경우에는 구글에서 이미지 검색해서 썸네일 업데이트 해주자.
+        if not pic_url:
+            upadete_google_image(movie,movie.title)
 
         movie.rating = float(rating)
         movie.genre = genre
@@ -694,10 +698,29 @@ def get_extra_info(movie,title):
         movie.story = story
         movie.save()
 
+    # 네이버 영화에서 검색결과 없다면.
     else:
+        upadete_google_image(movie,movie.title)  # 구글 검색해서 이미지라도 넣어주겠슴.
         dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["num"]+=1
         dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
 
+
+def upadete_google_image(movie,title):
+
+    search_term = title
+    search_url = "https://www.google.com/search?q={}&site=webhp&tbm=isch".format(search_term)
+    d = requests.get(search_url).text
+    soup = BeautifulSoup(d, 'html.parser')
+
+    img_tags = soup.find_all('img')
+
+    imgs_urls = []
+    for img in img_tags:
+        if img['src'].startswith("http"):
+            imgs_urls.append(img['src'])
+
+    movie.thumbnail_url = imgs_urls[0]
+    movie.save()
 
 def main_movie_crawler():
 
