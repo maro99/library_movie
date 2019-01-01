@@ -778,6 +778,7 @@ def main_movie_crawler():
         if not movie.when >= before_months_first_day_aware and movie.when <= after_months_last_day_aware:
             dict_log["deleted_movie"][movie.library.library_district.district_name]["num"] += 1
             dict_log["deleted_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
+            movie.delete()
 
         # 토탈 영화 갯수 구별로 달끊어서 로그 저장.
         # 이전월의첫날 <= 상영일 <= 다음월 마지막달 인 영화 count
