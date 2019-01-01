@@ -13,7 +13,7 @@
         body{
             background-color: #000000;
         }
-        h5, h4, h3, h2, h1 {
+        h5, h4, h3, h2, h1, span {
             color: #F0FFFF;
         }
         a {
@@ -25,16 +25,16 @@
 
 
 
- #gnb{ background:#000000; width:150px; height:40px; line-height:40px; margin:0 auto; }
-  #gnb ul li{ float:left; width:100px; color:#fff; text-align:center; }
-  #gnb ul li a{ color:#fff; font-weight:bold; display:block; }
-  #gnb ul li a:hover{ background:#666; }
-  #gnb ul li dl.dropdown{ border:3px #ccc solid; background:#FFC; display:none; }
-  #gnb ul li dl.dropdown dd{height:30px; line-height:30px; border-bottom:1px #ccc solid; }
-  #gnb ul li dl.dropdown a{ color:#333;  padding:0 5px; }
-  #gnb ul li dl.dropdown a:hover{ background:#F60; color:#fff; }
+      #gnb{ background:#000000; width:150px; height:40px; line-height:40px; margin:0 auto; }
+      #gnb ul li{ float:left; width:100px; color:#fff; text-align:center; }
+      #gnb ul li a{ color:#fff; font-weight:bold; display:block; }
+      #gnb ul li a:hover{ background:#666; }
+      #gnb ul li dl.dropdown{ border:3px #ccc solid; background:#FFC; display:none; }
+      #gnb ul li dl.dropdown dd{height:30px; line-height:30px; border-bottom:1px #ccc solid; }
+      #gnb ul li dl.dropdown a{ color:#333;  padding:0 5px; }
+      #gnb ul li dl.dropdown a:hover{ background:#F60; color:#fff; }
 
-  #gnb ul li.menu3:hover .dropdown{ display:block; }
+      #gnb ul li.menu3:hover .dropdown{ display:block; }
 
 
 
@@ -75,26 +75,7 @@
         {% endif %}
 
 
-    <!--<h4><a href="{% url 'main_page_by_date' %}"> 날짜순 정렬</a></h4>-->
-    <!--<h4><a href="{% url 'main_page_by_genre' %}"> 장르별 정렬 </a></h4>-->
 
-
-    <div id="gnb" style="float:right; display:inline-block;">
-        <ul>
-            <!--<li class="menu1"><a href="menu1.html">메뉴 1</a></li>-->
-            <!--<li class="menu2"><a href="menu2.html">메뉴 2</a></li>-->
-            <li class="menu3">
-                <a href="">정렬 </a>
-                <dl class="dropdown">
-                    <dd><a href="{% url 'main_page_by_date' %}"> 날짜순 정렬</a></dd>
-                    <dd><a href="{% url 'main_page_by_genre' %}"> 장르별 정렬 </a></dd>
-                    <dd><a href="{% url 'main_page_by_rating' %}"> 평점순 정렬 </a></dd>
-                </dl>
-            </li>
-        </ul>
-    </div>
-
-    <br><br><br><br><br><br>
 
 
     <div>

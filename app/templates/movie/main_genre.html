@@ -2,6 +2,22 @@
 
 
 {% block content %}
+    <div id="gnb" style="float:right; display:inline-block;">
+        <ul>
+
+            <li class="menu3">
+                <a href="">정렬 </a>
+                <dl class="dropdown">
+                    <dd><a href="{% url 'movies:main_page_by_date' %}"> 날짜순 정렬</a></dd>
+                    <dd><a href="{% url 'movies:main_page_by_genre' %}"> 장르별 정렬 </a></dd>
+                    <dd><a href="{% url 'movies:main_page_by_rating' %}"> 평점순 정렬 </a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+
+    <br><br><br><br><br><br>
+
 
 <div class="container">
 

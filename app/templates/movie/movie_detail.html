@@ -1,0 +1,65 @@
+{% extends '../base.html'%}
+
+
+{% block content %}
+
+<br>
+<br>
+<div class="card bg-dark text-white">
+
+        <div class="card-img-top" style="height: 354px; width: 618px; background-image: url('{{movie.thumbnail_url}}'); margin: 20px;  background-size: cover;"></div>
+            <div class="card-body">
+                <h4 class="card-title">{{movie.title}}</h4>
+
+                {% if movie.genre %}
+                    <p class="card-text">장르 : {{movie.genre}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">감독 : {{movie.director}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">평점 : {{movie.rating}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">시청연령 : {{movie.age}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">런타임 : {{movie.runtime}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">상영일: {{movie.when}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p class="card-text">장소: <a href="">{{movie.library.library_name}}</a> {{movie.place}}</p>
+                {% endif %}
+
+                {% if movie.genre %}
+                    <p>줄거리: </p>
+                    <span> {{movie.story}}</span>
+                {% endif %}
+
+            </div>
+
+
+
+</div>
+
+{% endblock %}
+
+
+
+
+    <!--runtime = models.CharField(max_length=100,blank=True)-->
+
+    <!--# 이하는 네이버 영화 검색으로 넣을것.-->
+    <!--director = models.CharField(max_length=200)-->
+    <!--story = models.TextField(blank=True)-->
+    <!--age = models.CharField(max_length=200, blank=True)-->
+
+

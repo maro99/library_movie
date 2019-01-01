@@ -80,4 +80,9 @@ def main_genre_page(request):
     return render(request, 'movie/main_genre.html',context=context)
 
 
-
+def movie_detail(request, pk):
+    movie = Movie.objects.get(pk=pk)
+    context = {
+        'movie':movie,
+    }
+    return render(request, 'movie/movie_detail.html', context)
