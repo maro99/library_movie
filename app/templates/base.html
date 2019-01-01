@@ -22,6 +22,22 @@
         p {
             color: #6495ED
         }
+
+
+
+ #gnb{ background:#000000; width:150px; height:40px; line-height:40px; margin:0 auto; }
+  #gnb ul li{ float:left; width:100px; color:#fff; text-align:center; }
+  #gnb ul li a{ color:#fff; font-weight:bold; display:block; }
+  #gnb ul li a:hover{ background:#666; }
+  #gnb ul li dl.dropdown{ border:3px #ccc solid; background:#FFC; display:none; }
+  #gnb ul li dl.dropdown dd{height:30px; line-height:30px; border-bottom:1px #ccc solid; }
+  #gnb ul li dl.dropdown a{ color:#333;  padding:0 5px; }
+  #gnb ul li dl.dropdown a:hover{ background:#F60; color:#fff; }
+
+  #gnb ul li.menu3:hover .dropdown{ display:block; }
+
+
+
     </style>
 
 
@@ -40,14 +56,14 @@
     <br>
         <div><p>{{user}}로 로그인 중</p></div>
     <br>
-        <div style="float:left" >
+        <div style="float:left; display:inline-block;" >
             <form action="{% url 'members:logout_view' %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary" >logout</button>
             </form>
         </div>
 
-        <div >
+        <div style="float:left; display:inline-block;">
             <a href="{% url 'members:user_detail_page' %}" class="btn btn-primary">mypage</a>
 
         </div>
@@ -56,13 +72,29 @@
         <a href="{% url 'members:login_page' %}" class="btn btn-primary">로그인</a>
         <a href="{% url 'members:signup_page' %}" class="btn btn-primary">회원가입</a>
     <br>
-    <br>
         {% endif %}
 
-    <br>
-    <h4><a href="{% url 'main_page_by_date' %}"> 날짜순 정렬</a></h4>
-    <h4><a href="{% url 'main_page_by_genre' %}"> 장르별 정렬 </a></h4>
-    <br>
+
+    <!--<h4><a href="{% url 'main_page_by_date' %}"> 날짜순 정렬</a></h4>-->
+    <!--<h4><a href="{% url 'main_page_by_genre' %}"> 장르별 정렬 </a></h4>-->
+
+
+    <div id="gnb" style="float:right; display:inline-block;">
+        <ul>
+            <!--<li class="menu1"><a href="menu1.html">메뉴 1</a></li>-->
+            <!--<li class="menu2"><a href="menu2.html">메뉴 2</a></li>-->
+            <li class="menu3">
+                <a href="">정렬 </a>
+                <dl class="dropdown">
+                    <dd><a href="{% url 'main_page_by_date' %}"> 날짜순 정렬</a></dd>
+                    <dd><a href="{% url 'main_page_by_genre' %}"> 장르별 정렬 </a></dd>
+                    <dd><a href="{% url 'main_page_by_rating' %}"> 평점순 정렬 </a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+
+    <br><br><br><br><br><br>
 
 
     <div>
