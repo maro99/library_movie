@@ -15,31 +15,31 @@
                     <p class="card-text">장르 : {{movie.genre}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
+                {% if movie.director %}
                     <p class="card-text">감독 : {{movie.director}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
+                {% if movie.rating %}
                     <p class="card-text">평점 : {{movie.rating}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
+                {% if movie.age %}
                     <p class="card-text">시청연령 : {{movie.age}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
-                    <p class="card-text">런타임 : {{movie.runtime}}</p>
+                {% if movie.runtime %}
+                    <p class="card-text">런타임 : {{movie.runtime}} 분 </p>
                 {% endif %}
 
-                {% if movie.genre %}
+                {% if movie.when %}
                     <p class="card-text">상영일: {{movie.when}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
-                    <p class="card-text">장소: <a href="">{{movie.library.library_name}}</a> {{movie.place}}</p>
+                {% if movie.library %}
+                    <p class="card-text">장소: <a href="https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query={{movie.library.library_name}}">{{movie.library.library_name}}</a> {{movie.place}}</p>
                 {% endif %}
 
-                {% if movie.genre %}
+                {% if movie.story %}
                     <p>줄거리: </p>
                     <span> {{movie.story}}</span>
                 {% endif %}
@@ -51,15 +51,4 @@
 </div>
 
 {% endblock %}
-
-
-
-
-    <!--runtime = models.CharField(max_length=100,blank=True)-->
-
-    <!--# 이하는 네이버 영화 검색으로 넣을것.-->
-    <!--director = models.CharField(max_length=200)-->
-    <!--story = models.TextField(blank=True)-->
-    <!--age = models.CharField(max_length=200, blank=True)-->
-
 
