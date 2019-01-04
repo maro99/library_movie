@@ -1,5 +1,7 @@
 from django.urls import path, include
 from ..import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'members'
 
@@ -17,6 +19,7 @@ urlpatterns = [
     path('google_login/', views.google_login, name='google_login'),
 
     path('user_detail_page/', views.user_detail_page, name='user_detail_page'),
+
     path('user_info_change/', views.user_info_change_page, name='user_info_change_page'),
     path('user_password_change_page/', views.user_password_change_page, name='user_password_change_page'),
     path('user_password_change/<str:uidb64>/<str:token>/<str:password>', views.user_password_change, name='user_password_change'),
@@ -25,5 +28,9 @@ urlpatterns = [
     path('user_phone_number_change_page/', views.user_phone_number_change_page, name='user_phone_number_change_page'),
     path('user_phone_number_change/<str:uidb64>/<str:token>/<str:phone_number>', views.user_phone_number_change, name='user_phone_number_change'),
 
-
-]
+    path('user_detail_page/user_movie_like_page/', views.user_movie_like_page, name='user_movie_like_page'),
+    path('user_detail_page/<int:pk>/user_movie_like/', views.user_movie_like, name = 'user_movie_like'),
+]+ static(
+    prefix=settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT,
+)

@@ -1,0 +1,46 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+        <br>
+        <br>
+
+        <h2># 찜 목록 # </h2>
+
+        <div class="container">
+            <div class="row">
+                {% for movie in like_movie_list %}
+                <div class="col-4 mb-3">
+                    <a href="{% url 'movies:movie_detail' pk=movie.pk %}"><div class="card-img-top" style="height: 177px; width: 309px; background-image: url('{{movie.thumbnail_url}}'); background-size: cover;">
+                        {% if user.is_authenticated %}
+                            <div style="float:right; display:inline-block;" >
+
+                                <form action="{% url 'members:user_movie_like' pk=movie.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    {% if movie in user.like_movies %}
+                                    <button type="submit" class="btn btn-danger btn-xs" >찜취소</button>
+                                    {% else %}
+                                    <button type="submit" class="btn btn-success btn-xs" >찜하기</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div></a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{movie.title}}</h5>
+                        <p class="card-text">일시: {{movie.when}}</p>
+                        <p class="card-text">장소: <a href="https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query={{movie.library.library_name}}">{{movie.library.library_name}}</a> {{movie.place}}</p>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+
+
+
+{% endblock %}

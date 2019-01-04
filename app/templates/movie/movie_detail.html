@@ -7,7 +7,24 @@
 <br>
 <div class="card bg-dark text-white">
 
-        <div class="card-img-top" style="height: 354px; width: 618px; background-image: url('{{movie.thumbnail_url}}'); margin: 20px;  background-size: cover;"></div>
+        <div class="card-img-top" style="height: 354px; width: 618px; background-image: url('{{movie.thumbnail_url}}'); margin: 20px;  background-size: cover;">
+
+            {% if user.is_authenticated %}
+                <div style="float:right; display:inline-block;" >
+
+                    <form action="{% url 'members:user_movie_like' pk=movie.pk %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        {% if movie in user.like_movies %}
+                            <button type="submit" class="btn btn-danger btn-xs" >찜취소</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-success btn-xs" >찜하기</button>
+                        {% endif %}
+                    </form>
+                </div>
+            {% endif %}
+
+        </div>
             <div class="card-body">
                 <h4 class="card-title">{{movie.title}}</h4>
 

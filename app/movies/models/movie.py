@@ -1,5 +1,4 @@
 from django.db import models
-
 from movies.models import Library
 
 
@@ -21,3 +20,4 @@ class Movie (models.Model):
 
     # 생성일 추가
     created_at = models.DateTimeField(auto_now_add=True)
+

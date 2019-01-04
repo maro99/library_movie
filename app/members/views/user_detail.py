@@ -1,13 +1,14 @@
 import sys
 
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 import traceback
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 
+from members.models import MovieLike
 from members.tasks import send_info_change_email, send_sms
 from members.tokens import passwod_change_token
 from django.utils.http import urlsafe_base64_encode
@@ -15,6 +16,8 @@ from django.utils.encoding import force_bytes
 
 import random
 import string
+
+from movies.models import Movie
 
 User = get_user_model()
 
@@ -214,6 +217,47 @@ def user_phone_number_change(request,uidb64,token,phone_number):
 
     except Exception as e:
         print(traceback.format_exc())
+
+
+def user_movie_like_page(request):
+
+    user = request.user
+    like_movie_list = user.like_movies
+
+    context = {
+        "like_movie_list" :like_movie_list
+    }
+
+    return render(request,'members/user_movie_like_page.html',context=context)
+
+
+def user_movie_like(request,pk):
+
+    if request.method == "POST":
+        user = request.user
+        movie = Movie.objects.get(pk=pk)
+
+        if movie in user.like_movies:
+            MovieLike.objects.filter(user=user,movie=movie).delete()
+        else:
+            movielike = MovieLike(
+                user=user,
+                movie=movie,
+            )
+            movielike.save()
+
+        like_movie_list = user.like_movies
+
+        context = {
+            "like_movie_list" :like_movie_list
+        }
+
+        next = request.POST.get('next', '/')
+        return HttpResponseRedirect(next)
+
+        # return render(request,'members/user_movie_like_page.html',context=context)
+
+
 
 
 
