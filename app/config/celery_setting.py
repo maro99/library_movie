@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
@@ -60,7 +59,7 @@ app.conf.beat_schedule = {
     # },
     'add-every-minute-contrab': {
         'task': 'crawling_then_send_result_email',
-        'schedule': crontab(minute=0, hour=7),
+        'schedule': crontab(minute=41, hour=12),
         'args': (),
     },
 }
