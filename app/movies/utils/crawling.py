@@ -580,6 +580,8 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
 def get_extra_info(movie,title):
 
+    global dict_log
+
     def get_soup(url):
         ssl._create_default_https_context = ssl._create_unverified_context
         res = req.urlopen(url)
@@ -723,6 +725,31 @@ def upadete_google_image(movie,title):
     movie.save()
 
 def main_movie_crawler():
+
+    global dict_log
+
+    dict_log = {
+        "updated_movie": {
+            "동대문구": {"num": 0, "list": []},
+            "성동구": {"num": 0, "list": []},
+            "광진구": {"num": 0, "list": []},
+        },
+        "no_extra_info_movie": {
+            "동대문구": {"num": 0, "list": []},
+            "성동구": {"num": 0, "list": []},
+            "광진구": {"num": 0, "list": []},
+        },
+        "deleted_movie": {
+            "동대문구": {"num": 0, "list": []},
+            "성동구": {"num": 0, "list": []},
+            "광진구": {"num": 0, "list": []},
+        },
+        "total_movie": {
+            "동대문구": {"before": 0, "now": 0, "after": 0},
+            "성동구": {"before": 0, "now": 0, "after": 0},
+            "광진구": {"before": 0, "now": 0, "after": 0},
+        },
+    }
 
     # 오늘 날짜 먼저 가져옴
     now = datetime.datetime.now()
