@@ -18,4 +18,6 @@ urlpatterns = [
     path('user-info-change-page/phone-number-change',
          apis.UserChangePhoneNumberView.as_view(), name='user-phone-number--change'),
 
+    path('movie-like-page', apis.UserMovieLikeList.as_view(), name='movie-like-page'),
+    path('movie-like/<int:pk>', apis.UserMovieLike.as_view(), name='movie-like'),
 ]

@@ -2,10 +2,13 @@ import random
 import string
 
 from django.contrib.auth import get_user_model
+from django.http import Http404
 from rest_framework import permissions, status
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from members.models import MovieLike
 from members.serializers import UserInfoChangePageSerializer, ChangePasswordSerializer, ChangeEmailSerializer, \
     ChangePhoneNumberSerializer
 from members.tokens import passwod_change_token
@@ -17,6 +20,9 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+
+from movies.models import Movie
+from movies.serializers import MovieMainSerializer
 
 User = get_user_model()
 
@@ -224,5 +230,56 @@ class UserChangePhoneNumberView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class UserMovieLikeList(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def get(self,request):
+
+        if request.user.is_authenticated:
+            like_movies = request.user.like_movies
+            serializer = MovieMainSerializer(like_movies, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        raise NotAuthenticated('로그인이 되어있지 않습니다.')
+
+
+class UserMovieLike(APIView):
+
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def get_movie_object(self,pk):
+        try:
+            return Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            raise Http404
+
+    def post(self, request,pk,format=None):
+
+        user = request.user
+        movie = self.get_movie_object(pk=pk)
+
+        if movie in user.like_movies:
+            MovieLike.objects.filter(user=user,movie=movie).delete()
+            data = {
+                'detail': f'찜목록에서 {movie.title} 이 삭제 되었습니다. '
+            }
+
+        else:
+            movielike = MovieLike(
+                user=user,
+                movie=movie,
+            )
+            movielike.save()
+
+            data = {
+                'detail': f'찜목록에 {movie.title} 이 추가되었습니다. '
+            }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
