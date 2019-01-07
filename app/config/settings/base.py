@@ -99,6 +99,44 @@ EMAIL_HOST_PASSWORD = secrets['EMAIL_HOST_PASSWORD']
 SERVER_EMAIL = secrets['SERVER_EMAIL']
 DEFAULT_FROM_MAIL = secrets['DEFAULT_FROM_MAIL']
 
+
+# CORS
+
+CORS_ORIGIN_ALLOW_ALL=False
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3001',
+)
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'my-custom-header',
+)
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -125,6 +163,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
 
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +174,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

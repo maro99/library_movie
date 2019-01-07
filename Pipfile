@@ -23,6 +23,7 @@ django-celery-results = "*"
 redis = "==2.10.6"
 celery = "*"
 coolsms-python-sdk = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 django-extensions = "*"
