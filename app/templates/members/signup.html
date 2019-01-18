@@ -14,7 +14,7 @@
                 {% csrf_token %}
                 {% for field in form %}
                 <div clsss="form-group">
-                    <label for="{{field.id_for_label}}">{{ field.label }}</label>
+                    <label for="{{field.id_for_label}}" style="color: #F0FFFF;">{{ field.label }}</label>
                     {{field}}
                     {{field.errors}}
                 </div>

@@ -20,4 +20,6 @@ urlpatterns = [
 
     path('movie-like-page', apis.UserMovieLikeList.as_view(), name='movie-like-page'),
     path('movie-like/<int:pk>', apis.UserMovieLike.as_view(), name='movie-like'),
+
+    path('logout', apis.LogoutView.as_view(), name='logout'),
 ]

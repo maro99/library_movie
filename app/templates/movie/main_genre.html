@@ -45,7 +45,7 @@
                                 <input type="hidden" name="next" value="{{ request.path }}">
                                 {% if movie in user.like_movies %}
                                 <button type="submit" class="btn btn-danger btn-xs" >찜취소</button>
-                                {% else %}
+                                    {% else %}
                                 <button type="submit" class="btn btn-success btn-xs" >찜하기</button>
                                 {% endif %}
                             </form>
