@@ -7,7 +7,8 @@ from members.serializers import UserSerializer
 
 # login
 
-class AuthToken(APIView):
+
+class Login(APIView):
     def post(self,request):
         # 전달받은 데이터에서 usernmae, passqord 추출
         username = request.data.get('username')

@@ -11,12 +11,14 @@ User = get_user_model()
 
 from ..tasks import send_email
 
+
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
        # 이런식으로 기존의 validator가져다가 쓸 수 도 있다.
        # 여기서 이렇게 지정시 알아서 어떤 애러이고 왜 일어났는지 error에 같이 보내준다.
        validators=[UniqueValidator(queryset=User.objects.all())]
     )
+
     password = serializers.CharField()
     password2 = serializers.CharField()
     email = serializers.EmailField(

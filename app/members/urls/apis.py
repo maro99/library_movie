@@ -7,7 +7,7 @@ app_name = 'members-api'
 
 urlpatterns = [
     path('', UserList.as_view()),
-    path('auth-token', apis.AuthToken.as_view()),
+    path('login', apis.Login.as_view()),
     path('auth-test', apis.AuthenticationTest.as_view()),
     path('signup', apis.Signup.as_view()),
     path('activate/<str:uidb64>/<str:token>', apis.UserActivate.as_view(), name='activate'),
@@ -22,4 +22,6 @@ urlpatterns = [
     path('movie-like/<int:pk>', apis.UserMovieLike.as_view(), name='movie-like'),
 
     path('logout', apis.LogoutView.as_view(), name='logout'),
+
+    path('signup-server-test', apis.SignupServerTest.as_view()),
 ]
