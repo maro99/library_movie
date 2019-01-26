@@ -13,6 +13,7 @@ class User(AbstractUser):
     img_profile = models.ImageField(upload_to="user", blank=True)
     password2 = models.CharField(max_length=255,blank=True)
     phone_number = models.CharField(max_length=255,blank=True)
+    movie = models.ManyToManyField(Movie,through='MovieLike')
     objects = UserManager()
 
     @property
