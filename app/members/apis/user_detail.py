@@ -266,7 +266,9 @@ class UserMovieLike(APIView):
         if movie in user.like_movies:
             MovieLike.objects.filter(user=user,movie=movie).delete()
             data = {
-                'detail': f'찜목록에서 {movie.title} 이 삭제 되었습니다. '
+                # 'detail': f'찜목록에서 {movie.title} 이 삭제 되었습니다. '
+                'detail': f'찜목록에서 삭제 되었습니다. '
+
             }
 
         else:
@@ -277,9 +279,12 @@ class UserMovieLike(APIView):
             movielike.save()
 
             data = {
-                'detail': f'찜목록에 {movie.title} 이 추가되었습니다. '
+                # 'detail': f'찜목록에 {movie.title} 이 추가되었습니다. '
+                'detail': f'찜목록에 추가 되었습니다. '
             }
 
         return Response(data, status=status.HTTP_200_OK)
+
+
 
 
