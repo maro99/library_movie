@@ -12,6 +12,8 @@ from selenium import webdriver
 import datetime
 
 import ssl
+import urllib
+import urllib3
 import urllib.request as req
 
 import datetime
@@ -218,12 +220,37 @@ def seongdonggu_movie_crawler(area_code, year):
             'page': page
         }
 
+        # url = "https://www.naver.com"
+        # url = "https://www.sdlib.or.kr/SD/U07080.asp?viewtype=list"
         url = "https://www.sdlib.or.kr/" + area_code + "/U07080.asp?viewtype=list&" + parse.urlencode(params)
         #     url = "https://www.sdlib.or.kr/SD/U07080.asp?viewtype=list&page=1&libno="
 
-        ssl._create_default_https_context = ssl._create_unverified_context
-        res = req.urlopen(url)
-        soup = BeautifulSoup(res, 'lxml')
+
+
+        request = requests.get(url, verify=False)
+        response = request.text
+
+
+        # 이하 몇몇 시도들
+
+        # ssl._create_default_https_context = ssl._create_unverified_context
+        # res = req.urlopen(url)
+
+        # context = ssl._create_unverified_context()
+        # req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0',     "Accept": "text/html"})
+        # html = urllib.request.urlopen(req,  context=context).read()
+
+
+        # # req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        # # res = urllib.request.urlopen(req).read()
+        #
+        # context = ssl._create_unverified_context()
+        # req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        #
+        # res = urllib.request.urlopen(req,  context=context)
+
+
+        soup = BeautifulSoup(response, 'lxml')
 
         table_rows = soup.select('table.table700 > tbody > tr')
 
@@ -756,7 +783,7 @@ def main_movie_crawler():
     year = now.year
     day = now.day
     month = now.month
-
+    #
     ##### 동대문구 크롤러#####
 
     dongdaemungu_area_code_list = ['MA', 'MF', 'MB', 'MC', 'MJ']
