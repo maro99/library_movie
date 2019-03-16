@@ -11,6 +11,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
+from rest_framework import status
 
 from config.settings.base import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET_CODE, KAKAOTALK_REST_API_KEY, NAVER_CLIENT_ID, \
     NAVER_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
@@ -53,6 +54,7 @@ class SettingsBackend:
 
 class FacebookBackend:
     def authenticate(self,request, code):
+        print('0@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         # 전달받은 인증코드를 사용해서 엑세스토큰을 받음.(facebook의 access_token주소로 get요청통해서)
         def get_access_token(code):
@@ -174,6 +176,7 @@ class FacebookBackend:
 
 class KakaotalkBackend:
     def authenticate(self, request, code):
+        print('1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         # 2 .access token 받기
         def get_access_token(code):
@@ -256,6 +259,7 @@ class KakaotalkBackend:
 
 class NaverBackend:
     def authenticate(self, request, code, state):##########
+        print('2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         def get_access_token(code,state):###########
             url = "https://nid.naver.com/oauth2.0/token"
@@ -325,6 +329,7 @@ class NaverBackend:
 
 class GoogleBackend:
     def authenticate(self, request, code):
+        print('3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         def get_access_token(code):
             url = 'https://www.googleapis.com/oauth2/v4/token'
@@ -345,7 +350,7 @@ class GoogleBackend:
             response = requests.post(url, params)
             response_dict = response.json()
             access_token = response_dict.get('access_token',None)
-
+            print(access_token)
             return  access_token
 
         def get_user_info (access_token):  # , fields=None
@@ -394,5 +399,63 @@ class GoogleBackend:
 
         try:
             return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+
+
+
+class APIGoogleBackends:
+
+    def authenticate(self, request, access_token, email):
+        print('4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+        def get_user_info (access_token):  # , fields=None
+            # # 3. access token 이용해서 회원프로필 조회
+            url = "https://www.googleapis.com/oauth2/v1/userinfo"
+
+            params = {
+                'access_token': access_token, 'alt': 'json'
+            }
+
+            response = requests.get(url, params=params)
+            # return HttpResponse(response)
+
+            # {"id": "108743605198166301707", "name": "Sanmaro Na", "given_name": "Sanmaro", "family_name": "Na",
+            #  "link": "https://plus.google.com/108743605198166301707",
+            #  "picture": "https://lh6.googleusercontent.com/-cYOpZZldajQ/AAAAAAAAAAI/AAAAAAAABtw/q8-Hofd6_QY/photo.jpg",
+            #  "gender": "male", "locale": "ko"}
+
+            response_dict = response.json()
+
+            return response_dict
+
+        def create_user_from_google_user_info(response_dict):
+            id = response_dict['id']
+            given_name = response_dict['given_name']
+            family_name = response_dict['family_name']
+
+            return User.objects.get_or_create(
+
+                username=id,
+                defaults={
+                    'first_name': given_name, # 이값은 고유해서 get할때 사용 가능.
+                    'last_name': family_name,# 이값은 고유하지 않아도됨. 입력되는 값.
+                    'email':email,
+                }
+            )
+
+
+        user_info_dict = get_user_info(access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
+
+        if user_info_dict:
+            user, user_created = create_user_from_google_user_info(user_info_dict)
+            return user
+        return None
+
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+
         except User.DoesNotExist:
             return None

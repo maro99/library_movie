@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as Validoation_Core_Error
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model,authenticate
 from django.core.validators import EmailValidator
 
 from rest_framework import serializers
@@ -132,3 +132,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+class AccessTokenSerializer(serializers.Serializer):
+
+    access_token = serializers.CharField()
+
+    def validate(self, attrs):
+
+        access_token = attrs.get('access_token')
+        print(f'22222, {access_token}')
+
+        if access_token:
+            user = authenticate(access_token=access_token)
+            if not user:
+                raise serializers.ValidationError('액세스 토큰이 잘못됬습니다.')
+
+        else:
+            raise serializers.ValidationError('액세스 토큰이 필요해요')
+
+        attrs['user'] = user
+        return attrs
