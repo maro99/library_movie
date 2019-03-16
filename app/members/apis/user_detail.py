@@ -81,6 +81,7 @@ class UserChangePasswordView(APIView):
             random_number = request.data.get('random_number')
             change_password_token = request.data.get('change_password_token')
             password = serializer.validated_data['password']
+            print(change_password_token)
 
             if passwod_change_token.check_token(user, change_password_token,random_number):
                 user.set_password(password)

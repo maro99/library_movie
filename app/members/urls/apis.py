@@ -24,4 +24,6 @@ urlpatterns = [
     path('logout', apis.LogoutView.as_view(), name='logout'),
 
     path('signup-server-test', apis.SignupServerTest.as_view()),
+
+    path('google-auth-token', apis.GoogleAuthToken.as_view()),
 ]
