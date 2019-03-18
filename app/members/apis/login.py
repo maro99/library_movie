@@ -53,26 +53,6 @@ class GoogleAuthToken(APIView):
         # 결과는 Postman으로 확인
 
         access_token = request.data.get('access_token')
-
-        # print(f'access_token: {access_token}')
-        # print(f'type: {type(access_token)}')
-        #
-        # url = "https://www.googleapis.com/oauth2/v1/userinfo"
-        # # url = "https://www.googleapis.com/plus/v1/people/me"
-        #
-        # params = {
-        #     'access_token': access_token, 'alt': 'json'
-        # }
-        #
-        # # params = {
-        # #      'access_token': access_token
-        # # }
-        #
-        # response = requests.get(url, params=params)
-        # print(response)
-        # # return HttpResponse(response)
-
-
         def get_user_info(access_token):
 
         # 3. access token 이용해서 회원프로필 조회
@@ -111,16 +91,10 @@ class GoogleAuthToken(APIView):
                 }
             )
 
-
-
         user_info_dict = get_user_info(access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
 
         print(f"user_info_dict: {user_info_dict}")
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@222')
-
-
-
-
 
         if user_info_dict:
             user, user_created = create_user_from_google_user_info(user_info_dict)
@@ -134,85 +108,3 @@ class GoogleAuthToken(APIView):
                 return Response(data)
 
         raise AuthenticationFailed('인증정보가 올바르지 않습니다.')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        #
-        #
-        #
-        #
-        #
-        #
-        # user = authenticate(request, access_token=access_token, email=email)
-        #
-        # print(f'user: {user}')
-        #
-        # if user:
-        #     # Token을 가져오거나 생성
-        #     token,__ = Token.objects.get_or_create(user=user)
-        #     # Response에 돌려줄 데이터
-        #     data = {
-        #         "token":token.key,
-        #     }
-        #     return Response(data)
-        #
-        # # authenticate에 실패한 경우
-        # raise AuthenticationFailed( '인증정보가 올바르지 않습니다.')
-        #
-
-
-
-
-
-
-
-
-
-
-        #
-        #
-        #
-        #
-        # print(request.data)
-        #
-        # serializer = AccessTokenSerializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # user = serializer.validated_data['user']
-        #
-        # token, _ = Token.objects.get_or_create(user=user)
-        #
-        # data = {
-        #     'token': token.key,
-        #     'user': UserSerializer(user).data,
-        # }
-        #
-        # return Response(data, status=status.HTTP_200_OK)
-        #
-        # # google_id = request.data.get('google_id')
-        # # # last_name = request.data.get('last_name')
-        # # # first_name = request.data.get('first_name')
-        # #
-        # # user, __ = User.objects.get_or_create(
-        # #     username=google_id,
-        # #
-        # # )
-        # # # 해당 User와 연결되는 Token생성
-        # # token, __ = Token.objects.get_or_create(user=user)
-        # # data = {
-        # #     'token': token.key,
-        # #     'user': UserSerializer(user).data,
-        # # }
-        # # return Response(data)
