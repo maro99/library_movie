@@ -11,7 +11,7 @@
 
             <a href="{% url 'members:user_info_change_page' %}" class="btn btn-primary">회원정보수정 </a>
             <a href="{% url 'members:user_movie_like_page' %}" class="btn btn-primary">찜 목록</a>
-            <a href="{% url 'members:signup_page' %}" class="btn btn-primary">알람설정</a>
+            <a href="{% url 'members:user_set_alarm_page' %}" class="btn btn-primary">알람설정</a>
             <div style="float; display:inline-block;" >
                 <form action="{% url 'members:signout_view' %}" method="POST">
                     {% csrf_token %}

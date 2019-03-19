@@ -31,6 +31,10 @@ urlpatterns = [
 
     path('user_detail_page/user_movie_like_page/', views.user_movie_like_page, name='user_movie_like_page'),
     path('user_detail_page/<int:pk>/user_movie_like/', views.user_movie_like, name = 'user_movie_like'),
+
+    path('user_detail_page/user_set_alarm_page/', views.user_set_alarm_page, name = 'user_set_alarm_page'),
+    path('user_detail_page/<int:type_num>/user_set_alarm/', views.user_set_alarm, name = 'user_set_alarm'),
+
 ]+ static(
     prefix=settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT,

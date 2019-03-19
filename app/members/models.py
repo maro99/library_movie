@@ -15,6 +15,8 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=255,blank=True)
     movie = models.ManyToManyField(Movie,through='MovieLike')
     objects = UserManager()
+    set_alarm_before_24h = models.BooleanField(default=False)
+    set_alarm_before_3h = models.BooleanField(default=False)
 
     @property
     def like_movies(self):

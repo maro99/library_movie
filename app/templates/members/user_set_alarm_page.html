@@ -1,0 +1,38 @@
+{% extends '../base.html'%}
+{% block content %}
+
+
+        <br>
+        <br>
+
+        <h2># 알람설정 # </h2>
+
+                            <div style="float:left; display:inline-block; margin: 5px 5px;" >
+
+                                <form action="{% url 'members:user_set_alarm' type_num=24 %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if user.set_alarm_before_24h %}
+                                        <button type="submit" class="btn btn-danger btn-xs" >24시간 이전 알람 취소 </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-success btn-xs" >24시간 이전 알람 설정</button>
+                                    {% endif %}
+                                </form>
+
+                            </div>
+
+                            <div style="float:left; display:inline-block; margin: 5px 5px;" >
+
+                                <form action="{% url 'members:user_set_alarm' type_num=3 %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if user.set_alarm_before_3h %}
+                                        <button type="submit" class="btn btn-danger btn-xs" >3시간 이전 알람 취소 </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-success btn-xs" >3시간 이전 알람 설정</button>
+                                    {% endif %}
+                                </form>
+
+                            </div>
+
+
+
+{% endblock %}

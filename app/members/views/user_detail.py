@@ -258,6 +258,34 @@ def user_movie_like(request,pk):
         # return render(request,'members/user_movie_like_page.html',context=context)
 
 
+def user_set_alarm_page(request):
+
+    return render(request,'members/user_set_alarm_page.html')
 
 
+def user_set_alarm(request,type_num):
+
+    # user = request.user
+    # set_alarm_before_24h = user.set_alarm_before_24h
+    # set_alarm_before_3h = user.set_alarm_before_3h
+
+
+    if request.method == "POST":
+        user = request.user
+
+        # 24시간 아후 타입에대한 요청일 경우
+        if type_num == 24:
+            if user.set_alarm_before_24h:
+                user.set_alarm_before_24h = False
+            else:
+                user.set_alarm_before_24h = True
+        # 3시간 이후 타입에 대한 요청이 경우
+        elif type_num == 3:
+            if user.set_alarm_before_3h:
+                user.set_alarm_before_3h = False
+            else:
+                user.set_alarm_before_3h = True
+        user.save()
+
+    return render(request,'members/user_set_alarm_page.html')
 

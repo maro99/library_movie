@@ -18,6 +18,8 @@
                                 <form action="{% url 'members:user_movie_like' pk=movie.pk %}" method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="next" value="{{ request.path }}">
+                                    <!--뷰 호출한 곳으로 다시돌아가기(찜의 경우 다양한 템플릿에서 post요청 받기 때문에 )-->
+
                                     {% if movie in user.like_movies %}
                                     <button type="submit" class="btn btn-danger btn-xs" >찜취소</button>
                                     {% else %}
