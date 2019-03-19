@@ -287,5 +287,41 @@ class UserMovieLike(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+class UserSetAlarm(APIView):
+
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def post(self, request,type_num):
+
+        user = request.user
+        data = {}
+        # 24시간 아후 타입에대한 요청일 경우
+        if type_num == 24:
+            if user.set_alarm_before_24h:
+                user.set_alarm_before_24h = False
+                data = {'detail': '영화 시작 24시간전 알람 해제됨'}
+            else:
+                user.set_alarm_before_24h = True
+                data = {'detail': '영화 시작 24시간전 알람 설정됨'}
+
+        # 3시간 이후 타입에 대한 요청이 경우
+        elif type_num == 3:
+            if user.set_alarm_before_3h:
+                user.set_alarm_before_3h = False
+                data = {'detail': '영화 시작 3시간전 알람 해제됨'}
+            else:
+                user.set_alarm_before_3h = True
+                data = {'detail': '영화 시작 3시간전 알람 설정됨'}
+        else:
+            data = {'detail': '시간 타입 설정 오류 (24 or 3 시간중 하나로 설정 가능합니다.)'}
+
+
+
+        user.save()
+
+        return Response(data, status=status.HTTP_200_OK)
+
 
 
