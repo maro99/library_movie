@@ -52,14 +52,16 @@ app.conf.beat_schedule = {
     #     'schedule': 5.0,  # 5초마다
     #     'args': (16,16)
     # },
-    # 'add-every-30-seconds': {
-    #     'task': 'tasks.add',
-    #     'schedule': 30.0, # 30초마다
-    #     'args': (16, 16)
-    # },
+    'add-every-hour-contab': {
+        'task': 'send_alarm_email',
+        'schedule': crontab(minute=0, hour='*/1'),
+        # 'schedule': crontab(minute=34, hour=21),
+        # 'schedule': 30.0,  # 5초마다
+        'args': ()
+    },
     'add-every-minute-contrab': {
         'task': 'crawling_then_send_result_email',
-        'schedule': crontab(minute=48, hour=21),
+        'schedule': crontab(minute=26, hour=21),
         'args': (),
     },
 }
