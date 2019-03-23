@@ -150,13 +150,9 @@ def send_alarm_email():
     four_hours_later = now + datetime.timedelta(hours=4)
     five_horus_later = now + datetime.timedelta(hours=5)
 
-    movies_4hour_later = MovieLike.objects.filter(movie__when__gte=one_day_later, movie__when__lt=one_day_and_an_hour_later)
-    movies_24hour_later = MovieLike.objects.filter(movie__when__gte=four_hours_later, movie__when__lt=five_horus_later)
+    movies_24hour_later = MovieLike.objects.filter(movie__when__gte=one_day_later, movie__when__lt=one_day_and_an_hour_later)
+    movies_4hour_later= MovieLike.objects.filter(movie__when__gte=four_hours_later, movie__when__lt=five_horus_later)
 
-
-    # 이하 테스트용 # 현제  ~ 2일 후  안에 포함된 영화에 대해서.
-    two_days_later = now + datetime.timedelta(days=2)
-    movies_48hour_later = MovieLike.objects.filter(movie__when__gte=now, movie__when__lte=two_days_later)
 
     # 24시간이후 <=  x  < 25시간 이후
     for movielike in movies_24hour_later:
@@ -181,7 +177,7 @@ def send_alarm_email():
     # 4시간이후 <=  x  < 5시간 이후
     for movielike in movies_4hour_later:
 
-        if movielike.user.set_alarm_before_24h and movielike.user.email:
+        if movielike.user.set_alarm_before_3h and movielike.user.email:
 
             message = render_to_string('movie/alarm_form.html', {
                 'title':movielike.movie.title,
@@ -200,26 +196,26 @@ def send_alarm_email():
 
 
 
-
-    # 이하 테스트용 # 현제  ~ 2일 후  안에 포함된 영화에 대해서.
-    two_days_later = now + datetime.timedelta(days=2)
-    movies_48hour_later = MovieLike.objects.filter(movie__when__gte=now, movie__when__lte=two_days_later)
-
-    # 24시간이후 <=  x  < 25시간 이후
-    for movielike in movies_48hour_later:
-
-        if movielike.user.set_alarm_before_24h and movielike.user.email:
-
-            message = render_to_string('movie/alarm_form.html', {
-                'title':movielike.movie.title,
-                'when':movielike.movie.when,
-                'library': movielike.movie.library.library_name,
-                'place':movielike.movie.place
-
-            })
-
-            mail_subject = f"도서관 영화 상영 정보 알람 테스트"
-            to_email = movielike.user.email
-            # EmailMessaage(제목, 본문, 받는이)
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
+    #
+    # # 이하 테스트용 # 현제  ~ 2일 후  안에 포함된 영화에 대해서.
+    # two_days_later = now + datetime.timedelta(days=2)
+    # movies_48hour_later = MovieLike.objects.filter(movie__when__gte=now, movie__when__lte=two_days_later)
+    #
+    # # 24시간이후 <=  x  < 25시간 이후
+    # for movielike in movies_48hour_later:
+    #
+    #     if movielike.user.set_alarm_before_24h and movielike.user.email:
+    #
+    #         message = render_to_string('movie/alarm_form.html', {
+    #             'title':movielike.movie.title,
+    #             'when':movielike.movie.when,
+    #             'library': movielike.movie.library.library_name,
+    #             'place':movielike.movie.place
+    #
+    #         })
+    #
+    #         mail_subject = f"도서관 영화 상영 정보 알람 테스트"
+    #         to_email = movielike.user.email
+    #         # EmailMessaage(제목, 본문, 받는이)
+    #         email = EmailMessage(mail_subject, message, to=[to_email])
+    #         email.send()
