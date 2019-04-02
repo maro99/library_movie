@@ -108,6 +108,8 @@ CORS_ORIGIN_ALLOW_ALL=False
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3001',
+    'localhost:3000',
+    'localhost:8000',
 )
 
 CORS_ALLOW_METHODS = (

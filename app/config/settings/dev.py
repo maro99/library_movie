@@ -4,7 +4,9 @@ secrets = json.load(open(os.path.join(SECRET_DIR, 'dev.json')))
 
 DEBUG = True
 ALLOWED_HOSTS = [
-
+    'api.localhost',
+    'localhost',
+    '127.0.0.1',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.dev.application'
