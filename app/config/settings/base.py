@@ -110,6 +110,8 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3001',
     'localhost:3000',
     'localhost:8000',
+    'maro5.com',
+    'www.maro5.com',
 )
 
 CORS_ALLOW_METHODS = (

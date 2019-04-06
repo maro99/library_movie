@@ -34,7 +34,7 @@ def send_email(pk):
     if RUNSERVER:
         domain = "localhost:8000"
     else:
-        domain = "maro5.com"
+        domain = "api.maro5.com"
 
 
     user = User.objects.get(pk=pk)
