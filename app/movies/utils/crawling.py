@@ -179,7 +179,7 @@ def dongdaemungu_movie_crawler(year,libGroup):
 
             # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
 
-            if dt >= before_months_first_day and dt <= after_months_last_day:
+            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
                 movie, movie_created_bool = Movie.objects.get_or_create(
                     library=library,
                     title=title,
@@ -192,8 +192,7 @@ def dongdaemungu_movie_crawler(year,libGroup):
 
 
 
-#    ##### 성동구 크롤러 ##### (페이지별)
-
+#    ##### 성동구 크롤러 ##### (페이지별) # 참고로 냄겨둠.
 def seongdonggu_movie_crawler(area_code, year):
     # 페이지 1~3를 탐색해서 해당 월에 상영하는 작품만 가져오자.
     for page in range(1, 3):
@@ -368,7 +367,7 @@ def gwangjingu_movie_crawler(area_code, year, month):
             library = Library.objects.get(library_code=area_code)
             print(library)
 
-            if dt >= before_months_first_day and dt <= after_months_last_day:
+            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
                 movie, movie_created_bool = Movie.objects.get_or_create(
                     library=library,
                     title=title,
@@ -454,7 +453,7 @@ def gwangjingu_movie_crawler(area_code, year, month):
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                if dt >= before_months_first_day and dt <= after_months_last_day:
+                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -562,7 +561,8 @@ def gwangjingu_movie_crawler(area_code, year, month):
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                if dt >= before_months_first_day and dt <= after_months_last_day:
+                # 상영기준이 오늘 보다 이전인것은 포함 안시키겠다.
+                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
