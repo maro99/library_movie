@@ -86,128 +86,181 @@ dict_log = {
 
 #     ##### 동대문구 크롤러##### (월별)
 def dongdaemungu_movie_crawler(year,libGroup):
-    params = {
-        'libGroup': libGroup,
-    }
-    url = "http://www.l4d.or.kr/library/index.php?g_page=culture&m_page=culture04&" + parse.urlencode(params)
 
-    request = requests.get(url)
-    response = request.text
-    soup = BeautifulSoup(response, 'lxml')
+    # MA(동대문) 의 경우만 2페이지까지 크롤링
+    page_num_list = ['1']
+    if libGroup == 'MA':
+        page_num_list = ['1','2']
 
-    # 영화별 정보 담은 박스
-    data_boxes = soup.select('div.data_wrapper')
 
-    for data_box in data_boxes:
+    for page_num in page_num_list:
 
-        pic_url = ""  # 사진
-        title = ""  # 제목
-        when = ""  # 일시
-        when_date_year = 0
-        when_date_month = 0
-        when_date_day = 0
-        when_time_hour = 0
-        when_time_minuite = 0
-        runtime = 0  # 런타임
-        place = ""  # 장소
+        params = {
+            'currentPageNo':page_num,
+            'manageCd': libGroup,
+        }
+        url = "https://www.l4d.or.kr/intro/menu/10111/program/30030/movieList.do?" + parse.urlencode(params)
 
-        # 사진 뽑기
-        pic_url = data_box.select_one('div.pic > a > img').get('src')
-        # 사진 url을 뽑아보니 두가지 경우가 있다.
-        # http로 시작 하는 경우, 상대결로로서 l4d주소 있다 가정하고 뒷주소만 있는경우
+        request = requests.get(url)
+        response = request.text
+        soup = BeautifulSoup(response, 'lxml')
 
-        # 뒷 주소만 있는경우 ../경로표시 빼고 l4d 주소 더해준다.
-        if not re.findall('http://', pic_url):
-            pic_url = 'http://www.l4d.or.kr/' + re.findall('\..(.*)', pic_url)[0]
+        movie_lis = soup.select('ul.movie-list > li')
 
-        # @ 사진
-        print(f'pic_url: {pic_url}')
+        for movie_li in movie_lis:
+            #     print(movie_li)
 
-        # 제목 뽑기
-        title = data_box.select_one('h3.recom_title > a').get_text(strip=True)
-        # @ 제목
-        print(f'title: {title}')
+            title = ""  # 제목
 
-        # 나머지 정보들 뽑기.
+            when = ""  # 일시
+            when_date_year = 0
+            when_date_month = 0
+            when_date_day = 0
+            when_time_hour = 0
+            when_time_minuite = 0
+            runtime = 0  # 런타임
+            place = ""  # 장소
 
-        #         print(data_box.prettify())
+            title = movie_li.select_one('dt.tit').get_text(strip=True)
+            print(f'title: {title}')
 
-        #         <li>
-        #           <span class="fb">
-        #            일시
-        #           </span>
-        #           : 2018.09.02 13:00 (일)
-        #          </li>
+            lis = movie_li.select('dd > ul.clearfix > li')
+            for li in lis:
+
+                #         print(li)
+                if li.get_text().split(' ')[0].strip() == '상영일자':
+                    when = "".join(li.get_text().split(' ')[1:]).strip()
+                    print(f'when: {when}')
+
+                    if re.findall('\s(\d\d\d\d).', when):
+                        when_date_year = re.findall('\s(\d\d\d\d).', when)[0]
+
+                    if re.findall('\d\d\d\d.(\d{1,2}).', when):
+                        when_date_month = re.findall('\d\d\d\d.(\d{1,2}).', when)[0]
+
+                    if re.findall('\d\d\d\d.\d*.(\d\d)', when):
+                        when_date_day = re.findall('\d\d\d\d.\d*.(\d\d)', when)[0]
+
+                    # 18:00 이런 식으로 표현될때만 이하 처리
+                    if re.findall('(\d\d):', when):
+                        when_time_hour = re.findall('(\d\d):', when)[0]
+                        when_time_minuite = re.findall('\d\d:(\d\d)', when)[0]
+                    # 18시 이런식으로 표현될땐 ~
+                    elif re.findall('(\d+)\s*시', when):
+                        when_time_hour = re.findall('(\d+)시', when)[0]
+                    # 18시 30분 이런식으로 표현시
+                    elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                        when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
+                        when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                    print(f'when_date_year: {when_date_year}')
+                    print(f'when_date_month: {when_date_month}')
+                    print(f'when_date_day: {when_date_day}')
+                    print(f'when_time_hour: {when_time_hour}')
+                    print(f'when_time_minuite: {when_time_minuite}')
+
+
+                elif li.get_text().split(' ')[0].strip() == '상영시간':
+                    if re.findall('(\d+)', li.get_text()):
+                        runtime = re.findall('(\d+)', li.get_text())[0]
+                    print(f'runtime: {runtime}')
+
+                elif li.get_text().split(' ')[0].strip() == '상영장소':
+                    if li.get_text().split(':'):
+                        place = li.get_text().split(':')[1].strip()
+                    print(f'place: {place}')
+
+            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            dt = datetime.datetime.combine(d, t)
+
+            library = Library.objects.get(library_code=libGroup)
+            # print(library)
+
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+            if dt >= before_months_first_day and dt <= after_months_last_day:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                )
+
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+
+
+
         #
-        #          이런식으로 리스트들이 들어있는데
-        #          li를 자식인 span.fb의 text인 일시 를 기준으로 찾고 싶다.
-        #          즉 기준이되는 찾은 테그의 부모의 택스트를 가져오고 싶은것.
-
-        # 여기서 선택 된 것은 tag리스트이고
-        # 이중 text가 일시 인것을 먼저 찾아보겠다.
-
-        span_tags = data_box.select('ul > li > span.fb')
-        #         print(span_tags)
-
-        for span_tag in span_tags:
-            span_tag_text = span_tag.get_text(strip=True)
-
-            if span_tag_text == "일시":
-                when = span_tag.parent.get_text(strip=True)  # 일시: 2018.10.07 16:00 (일)
-                when_date_year = re.findall('\s(\d\d\d\d).', when)[0]
-                when_date_month = re.findall('\d\d\d\d.(\d{1,2}).', when)[0]
-                when_date_day = re.findall('\d\d\d\d.\d*.(\d{1,2})\s', when)[0]
-                when_time_hour = re.findall('\s(\d\d):', when)[0]
-                when_time_minuite = re.findall('\s\d\d:(\d\d)', when)[0]
-                print(f'when_date_year: {when_date_year}')
-                print(f'when_date_month: {when_date_month}')
-                print(f'when_date_day: {when_date_day}')
-                print(f'when_time_hour: {when_time_hour}')
-                print(f'when_time_minuite: {when_time_minuite}')
-
-            elif span_tag_text == "장소":
-                place_pre = span_tag.parent.get_text(strip=True)  # 장소: 지하2층 시청각실
-                place = re.findall('장소:\s*(.*)', place_pre)[0]
-                print(f'place: {place}')
-
-            elif span_tag_text == "시간":
-                runtime_pre = span_tag.parent.get_text(strip=True)  # 시간: 92분
-                runtime = re.findall('시간:\s*(\d*)', runtime_pre)[0]
-                print(f'runtime: {runtime}')
-
-        # pic_url = ""  # 사진
-        # title = ""  # 제목
-        # when = ""  # 일시
-        # when_date_year = ""
-        # when_date_month = ""
-        # when_date_day = ""
-        # when_time_hour = ""
-        # when_time_minuite = ""
-        # runtime = ""  # 런타임
-        # place = ""  # 장소
-
-
-        d = datetime.date(int(when_date_year),int(when_date_month),int(when_date_day))
-        t = datetime.time(int(when_time_hour),int(when_time_minuite),0)
-        dt = datetime.datetime.combine(d, t)
-
-        library = Library.objects.get(library_code=libGroup)
-        print(library)
-
-        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
-
-        if dt >= before_months_first_day and dt <= after_months_last_day:
-            movie,movie_created_bool = Movie.objects.get_or_create(
-                library = library,
-                title = title,
-                when = dt,
-                place = place,
-                runtime = runtime,
-                # thumbnail_url = pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
-            )
-
-
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        #
+        #
+        #
+        #
+        #
+        # span_tags = data_box.select('ul > li > span.fb')
+        # #         print(span_tags)
+        #
+        # for span_tag in span_tags:
+        #     span_tag_text = span_tag.get_text(strip=True)
+        #
+        #     if span_tag_text == "일시":
+        #         when = span_tag.parent.get_text(strip=True)  # 일시: 2018.10.07 16:00 (일)
+        #         when_date_year = re.findall('\s(\d\d\d\d).', when)[0]
+        #         when_date_month = re.findall('\d\d\d\d.(\d{1,2}).', when)[0]
+        #         when_date_day = re.findall('\d\d\d\d.\d*.(\d{1,2})\s', when)[0]
+        #         when_time_hour = re.findall('\s(\d\d):', when)[0]
+        #         when_time_minuite = re.findall('\s\d\d:(\d\d)', when)[0]
+        #         print(f'when_date_year: {when_date_year}')
+        #         print(f'when_date_month: {when_date_month}')
+        #         print(f'when_date_day: {when_date_day}')
+        #         print(f'when_time_hour: {when_time_hour}')
+        #         print(f'when_time_minuite: {when_time_minuite}')
+        #
+        #     elif span_tag_text == "장소":
+        #         place_pre = span_tag.parent.get_text(strip=True)  # 장소: 지하2층 시청각실
+        #         place = re.findall('장소:\s*(.*)', place_pre)[0]
+        #         print(f'place: {place}')
+        #
+        #     elif span_tag_text == "시간":
+        #         runtime_pre = span_tag.parent.get_text(strip=True)  # 시간: 92분
+        #         runtime = re.findall('시간:\s*(\d*)', runtime_pre)[0]
+        #         print(f'runtime: {runtime}')
+        #
+        # # pic_url = ""  # 사진
+        # # title = ""  # 제목
+        # # when = ""  # 일시
+        # # when_date_year = ""
+        # # when_date_month = ""
+        # # when_date_day = ""
+        # # when_time_hour = ""
+        # # when_time_minuite = ""
+        # # runtime = ""  # 런타임
+        # # place = ""  # 장소
+        #
+        #
+        # d = datetime.date(int(when_date_year),int(when_date_month),int(when_date_day))
+        # t = datetime.time(int(when_time_hour),int(when_time_minuite),0)
+        # dt = datetime.datetime.combine(d, t)
+        #
+        # library = Library.objects.get(library_code=libGroup)
+        # print(library)
+        #
+        # # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+        #
+        # if dt >= before_months_first_day and dt <= after_months_last_day:
+        #     movie,movie_created_bool = Movie.objects.get_or_create(
+        #         library = library,
+        #         title = title,
+        #         when = dt,
+        #         place = place,
+        #         runtime = runtime,
+        #         # thumbnail_url = pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
+        #     )
+        #
+        #
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
 #    ##### 성동구 크롤러 ##### (페이지별)
@@ -795,17 +848,17 @@ def main_movie_crawler():
         print(
             f'{libGroup} #####################################################################################################################################')
 
-    ### 성동구 크롤러 #####
-
-    seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
-    # 성동구립,용답, 장안, 성수, 금호,청계
-#     seongdonggu_area_code_list = ['SD']
-
-    for area_code in seongdonggu_area_code_list:
-        seongdonggu_movie_crawler(area_code,year)
-        print(f'{area_code}#############################################################################################################################')
-
-
+#     ### 성동구 크롤러 #####
+#
+#     seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
+#     # 성동구립,용답, 장안, 성수, 금호,청계
+# #     seongdonggu_area_code_list = ['SD']
+#
+#     for area_code in seongdonggu_area_code_list:
+#         seongdonggu_movie_crawler(area_code,year)
+#         print(f'{area_code}#############################################################################################################################')
+#
+#
 #     ##### 광진구 크롤러 #####
     gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
 #     정보 , 중곡문화체육센터, 구의제3동
