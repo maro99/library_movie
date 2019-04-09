@@ -197,7 +197,7 @@ def send_alarm_email():
 
 
     # 만료된 영화 삭제
-    expired_movies = Movie.objects.filter(when__lte=now)
+    expired_movies = Movie.objects.filter(when__gte=now)
     expired_movies.delete()
 
 
