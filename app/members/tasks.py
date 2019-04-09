@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from members.models import MovieLike
+from movies.models import Movie
 from .tokens import account_activation_token
 
 from django.contrib.auth import get_user_model
@@ -136,7 +137,7 @@ def mul(x, y):
 
 
 
-
+# 알람 보내기 + 만료된 영화 삭제
 @celery_app.task(name="send_alarm_email")
 def send_alarm_email():
 
@@ -192,6 +193,12 @@ def send_alarm_email():
             # EmailMessaage(제목, 본문, 받는이)
             email = EmailMessage(mail_subject, message, to=[to_email])
             email.send()
+
+
+
+    # 만료된 영화 삭제
+    expired_movies = Movie.objects.filter(when__lte=now)
+    expired_movies.delete()
 
 
 
