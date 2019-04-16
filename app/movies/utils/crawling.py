@@ -69,14 +69,6 @@ dict_log = {
         "성북구": {"num": 0, "list": []},
         "송파구": {"num": 0, "list": []},
     },
-    "deleted_movie": {
-        "동대문구":{"num":0,"list":[]},
-        "성동구":{"num":0,"list":[]},
-        "광진구": {"num": 0,"list": []},
-        "중랑구": {"num": 0, "list": []},
-        "성북구": {"num": 0, "list": []},
-        "송파구": {"num": 0, "list": []},
-    },
     "total_movie": {
         "동대문구": {"before": 0, "now": 0, "after": 0},
         "성동구": {"before": 0, "now": 0, "after": 0},
@@ -85,6 +77,14 @@ dict_log = {
         "성북구": {"before": 0, "now": 0, "after": 0},
         "송파구": {"before": 0, "now": 0, "after": 0},
     },
+    # "deleted_movie": {
+    #     "동대문구": {"num": 0, "list": []},
+    #     "성동구": {"num": 0, "list": []},
+    #     "광진구": {"num": 0, "list": []},
+    #     "중랑구": {"num": 0, "list": []},
+    #     "성북구": {"num": 0, "list": []},
+    #     "송파구": {"num": 0, "list": []},
+    # },
 }
 
 
@@ -184,8 +184,14 @@ def dongdaemungu_movie_crawler(year,libGroup):
 
             # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
             if title:
+
+                # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+                when_time_hour = int(when_time_hour)
+                if 0 < when_time_hour < 9:
+                    when_time_hour = when_time_hour + 12
+
                 d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                t = datetime.time(when_time_hour, int(when_time_minuite), 0)
                 dt = datetime.datetime.combine(d, t)
 
                 library = Library.objects.get(library_code=libGroup)
@@ -193,7 +199,11 @@ def dongdaemungu_movie_crawler(year,libGroup):
 
                 # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
 
-                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+                # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+                # 현재 달보다 앞선것만 저장하자.
+                if dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -288,14 +298,24 @@ def seongdonggu_movie_crawler(area_code, year):
 
             # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
             if title:
+
+                # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+                when_time_hour = int(when_time_hour)
+                if 0 < when_time_hour < 9:
+                    when_time_hour = when_time_hour + 12
+
                 d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                t = datetime.time(when_time_hour, int(when_time_minuite), 0)
                 dt = datetime.datetime.combine(d, t)
 
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                if dt >= before_months_first_day and dt <= after_months_last_day:
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+                # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+                # 현재 달보다 앞선것만 저장하자.
+                if dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -376,14 +396,23 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
             # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
             if title:
+                # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+                when_time_hour = int(when_time_hour)
+                if 0 < when_time_hour < 9:
+                    when_time_hour = when_time_hour + 12
+
                 d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                t = datetime.time(when_time_hour, int(when_time_minuite), 0)
                 dt = datetime.datetime.combine(d, t)
 
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+                # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+                # 현재 달보다 앞선것만 저장하자.
+                if dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -462,14 +491,24 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
                 print('@@@@@@@@@@@@@@@@@@@@@@@@')
 
+
+                # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+                when_time_hour = int(when_time_hour)
+                if 0 < when_time_hour < 9:
+                    when_time_hour = when_time_hour + 12
+
                 d = datetime.date(int(year), int(when_date_month), int(when_date_day))
-                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                t = datetime.time(when_time_hour, int(when_time_minuite), 0)
                 dt = datetime.datetime.combine(d, t)
 
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+                # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+                # 현재 달보다 앞선것만 저장하자.
+                if dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -570,15 +609,23 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
                 print('@@@@@@@@@@@@@@@@@@@@@@@@')
 
+                # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+                when_time_hour = int(when_time_hour)
+                if 0 < when_time_hour < 9:
+                    when_time_hour = when_time_hour + 12
+
                 d = datetime.date(int(year), int(when_date_month), int(when_date_day))
-                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                t = datetime.time(when_time_hour, int(when_time_minuite), 0)
                 dt = datetime.datetime.combine(d, t)
 
                 library = Library.objects.get(library_code=area_code)
                 print(library)
 
-                # 상영기준이 오늘 보다 이전인것은 포함 안시키겠다.
-                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+                # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+                # 현재 달보다 앞선것만 저장하자.
+                if dt >= now_date:
                     movie, movie_created_bool = Movie.objects.get_or_create(
                         library=library,
                         title=title,
@@ -687,16 +734,24 @@ def jungnanggu_movie_crawler(libGroup):
 
         # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
         if title:
+
+            # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+            when_time_hour = int(when_time_hour)
+            if 0 < when_time_hour < 9:
+                when_time_hour = when_time_hour + 12
+
             d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            t = datetime.time(when_time_hour, int(when_time_minuite), 0)
             dt = datetime.datetime.combine(d, t)
 
             library = Library.objects.get(library_code=libGroup)
             # print(library)
 
-            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+            # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
 
-            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+            # 현재 달보다 앞선것만 저장하자.
+            if dt >= now_date:
                 movie, movie_created_bool = Movie.objects.get_or_create(
                     library=library,
                     title=title,
@@ -780,16 +835,23 @@ def seongbukgu_movie_crawler(libGroup):
 
         # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
         if title:
+            # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+            when_time_hour = int(when_time_hour)
+            if 0 < when_time_hour < 9:
+                when_time_hour = when_time_hour + 12
+
             d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            t = datetime.time(when_time_hour, int(when_time_minuite), 0)
             dt = datetime.datetime.combine(d, t)
 
             library = Library.objects.get(library_code=libGroup)
             # print(library)
 
-            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+            # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
 
-            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+            # 현재 달보다 앞선것만 저장하자.
+            if dt >= now_date:
                 movie, movie_created_bool = Movie.objects.get_or_create(
                     library=library,
                     title=title,
@@ -876,16 +938,23 @@ def songpagu_movie_crawler(libGroup):
 
         # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
         if title:
+            # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
+            when_time_hour = int(when_time_hour)
+            if 0 < when_time_hour < 9:
+                when_time_hour = when_time_hour + 12
+
             d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            t = datetime.time(when_time_hour, int(when_time_minuite), 0)
             dt = datetime.datetime.combine(d, t)
 
             library = Library.objects.get(library_code=libGroup)
             # print(library)
 
-            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+            # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
 
-            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+            # 현재 달보다 앞선것만 저장하자.
+            if dt >= now_date:
                 movie, movie_created_bool = Movie.objects.get_or_create(
                     library=library,
                     title=title,
@@ -1063,14 +1132,6 @@ def main_movie_crawler():
             "성북구": {"num": 0, "list": []},
             "송파구": {"num": 0, "list": []},
         },
-        "deleted_movie": {
-            "동대문구": {"num": 0, "list": []},
-            "성동구": {"num": 0, "list": []},
-            "광진구": {"num": 0, "list": []},
-            "중랑구": {"num": 0, "list": []},
-            "성북구": {"num": 0, "list": []},
-            "송파구": {"num": 0, "list": []},
-        },
         "total_movie": {
             "동대문구": {"before": 0, "now": 0, "after": 0},
             "성동구": {"before": 0, "now": 0, "after": 0},
@@ -1079,6 +1140,14 @@ def main_movie_crawler():
             "성북구": {"before": 0, "now": 0, "after": 0},
             "송파구": {"before": 0, "now": 0, "after": 0},
         },
+        # "deleted_movie": {
+        #     "동대문구":{"num":0,"list":[]},
+        #     "성동구":{"num":0,"list":[]},
+        #     "광진구": {"num": 0,"list": []},
+        #     "중랑구": {"num": 0, "list": []},
+        #     "성북구": {"num": 0, "list": []},
+        #     "송파구": {"num": 0, "list": []},
+        # },
     }
 
     # 오늘 날짜 먼저 가져옴
@@ -1151,15 +1220,15 @@ def main_movie_crawler():
             title = movie.title
             get_extra_info(movie, title)
 
-        # 삭제될 영화 타이틀 로그에 저장
-        if not movie.when >= before_months_first_day_aware and movie.when <= after_months_last_day_aware:
-            dict_log["deleted_movie"][movie.library.library_district.district_name]["num"] += 1
-            dict_log["deleted_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
-            movie.delete()
+        # # 삭제될 영화 타이틀 로그에 저장 ( 이거 당분간 안쓸거라 빼줌.. 애러도 뭔가 있다. )
+        # if not movie.when >= before_months_first_day_aware and movie.when <= after_months_last_day_aware:
+        #     dict_log["deleted_movie"][movie.library.library_district.district_name]["num"] += 1
+        #     dict_log["deleted_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
+        #     movie.delete()
 
         # 토탈 영화 갯수 구별로 달끊어서 로그 저장.
         # 이전월의첫날 <= 상영일 <= 다음월 마지막달 인 영화 count
-        elif (movie.when >= before_months_first_day_aware) and (movie.when < now_months_first_day_aware):
+        if (movie.when >= before_months_first_day_aware) and (movie.when < now_months_first_day_aware):
             dict_log["total_movie"][movie.library.library_district.district_name]["before"] += 1
 
         elif (movie.when >= now_months_first_day_aware) and (movie.when < after_months_first_day_aware):
