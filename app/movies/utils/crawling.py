@@ -57,21 +57,33 @@ dict_log = {
         "동대문구": {"num": 0,"list": []},
         "성동구": {"num": 0,"list": []},
         "광진구": {"num": 0,"list": []},
+        "중랑구": {"num": 0, "list": []},
+        "성북구": {"num": 0, "list": []},
+        "송파구": {"num": 0, "list": []},
     },
     "no_extra_info_movie" : {
         "동대문구":{"num":0,"list":[]},
         "성동구":{"num":0,"list":[]},
         "광진구": {"num": 0,"list": []},
+        "중랑구": {"num": 0, "list": []},
+        "성북구": {"num": 0, "list": []},
+        "송파구": {"num": 0, "list": []},
     },
     "deleted_movie": {
         "동대문구":{"num":0,"list":[]},
         "성동구":{"num":0,"list":[]},
         "광진구": {"num": 0,"list": []},
+        "중랑구": {"num": 0, "list": []},
+        "성북구": {"num": 0, "list": []},
+        "송파구": {"num": 0, "list": []},
     },
     "total_movie": {
         "동대문구": {"before": 0, "now": 0, "after": 0},
         "성동구": {"before": 0, "now": 0, "after": 0},
         "광진구": {"before": 0, "now": 0, "after": 0},
+        "중랑구": {"before": 0, "now": 0, "after": 0},
+        "성북구": {"before": 0, "now": 0, "after": 0},
+        "송파구": {"before": 0, "now": 0, "after": 0},
     },
 }
 
@@ -145,13 +157,13 @@ def dongdaemungu_movie_crawler(year,libGroup):
                     if re.findall('(\d\d):', when):
                         when_time_hour = re.findall('(\d\d):', when)[0]
                         when_time_minuite = re.findall('\d\d:(\d\d)', when)[0]
-                    # 18시 이런식으로 표현될땐 ~
-                    elif re.findall('(\d+)\s*시', when):
-                        when_time_hour = re.findall('(\d+)시', when)[0]
                     # 18시 30분 이런식으로 표현시
                     elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
                         when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
                         when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+                    # 18시 이런식으로 표현될땐 ~
+                    elif re.findall('(\d+)\s*시', when):
+                        when_time_hour = re.findall('(\d+)시', when)[0]
 
                     print(f'when_date_year: {when_date_year}')
                     print(f'when_date_month: {when_date_month}')
@@ -170,25 +182,27 @@ def dongdaemungu_movie_crawler(year,libGroup):
                         place = li.get_text().split(':')[1].strip()
                     print(f'place: {place}')
 
-            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
-            dt = datetime.datetime.combine(d, t)
+            # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+            if title:
+                d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                dt = datetime.datetime.combine(d, t)
 
-            library = Library.objects.get(library_code=libGroup)
-            # print(library)
+                library = Library.objects.get(library_code=libGroup)
+                # print(library)
 
-            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+                # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
 
-            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
-                movie, movie_created_bool = Movie.objects.get_or_create(
-                    library=library,
-                    title=title,
-                    when=dt,
-                    place=place,
-                    runtime=runtime,
-                )
+                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                    movie, movie_created_bool = Movie.objects.get_or_create(
+                        library=library,
+                        title=title,
+                        when=dt,
+                        place=place,
+                        runtime=runtime,
+                    )
 
-            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
 
@@ -272,24 +286,26 @@ def seongdonggu_movie_crawler(area_code, year):
                     runtime = runtime_pre.split('분')[0]
                     print(f'runtime :  {runtime}')  # 상영시간
 
-            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
-            dt = datetime.datetime.combine(d, t)
+            # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+            if title:
+                d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                dt = datetime.datetime.combine(d, t)
 
-            library = Library.objects.get(library_code=area_code)
-            print(library)
+                library = Library.objects.get(library_code=area_code)
+                print(library)
 
-            if dt >= before_months_first_day and dt <= after_months_last_day:
-                movie, movie_created_bool = Movie.objects.get_or_create(
-                    library=library,
-                    title=title,
-                    when=dt,
-                    place=place,
-                    runtime=runtime,
-                    # thumbnail_url=pic_url,  #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
-                )
+                if dt >= before_months_first_day and dt <= after_months_last_day:
+                    movie, movie_created_bool = Movie.objects.get_or_create(
+                        library=library,
+                        title=title,
+                        when=dt,
+                        place=place,
+                        runtime=runtime,
+                        # thumbnail_url=pic_url,  #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
+                    )
 
-            print('@@@@@@@@@@@@@@@@@@@@@@@@@')
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@')
 
         print(f'{page}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
@@ -358,24 +374,24 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
                     print('@@@@@@@@@@@@@@@@@@')
 
+            # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+            if title:
+                d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+                t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+                dt = datetime.datetime.combine(d, t)
 
+                library = Library.objects.get(library_code=area_code)
+                print(library)
 
-            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
-            dt = datetime.datetime.combine(d, t)
-
-            library = Library.objects.get(library_code=area_code)
-            print(library)
-
-            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
-                movie, movie_created_bool = Movie.objects.get_or_create(
-                    library=library,
-                    title=title,
-                    when=dt,
-                    place=place,
-                    runtime=runtime,
-                    # thumbnail_url=pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
-                )
+                if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                    movie, movie_created_bool = Movie.objects.get_or_create(
+                        library=library,
+                        title=title,
+                        when=dt,
+                        place=place,
+                        runtime=runtime,
+                        # thumbnail_url=pic_url #  ---> 12.31/ get_or_create시 계속 중복 생성해서 여기선 업데이트 x
+                    )
 
     #         pass
 
@@ -643,13 +659,15 @@ def jungnanggu_movie_crawler(libGroup):
                 when_date_month = re.findall('(\d{1,2})\s*월', when)[0]
                 when_date_day = re.findall('(\d{1,2})\s*일', when)[0]
 
-                # 18시 이런식으로만 표현될땐 ~
-                if re.findall('(\d+)\s*시', when):
-                    when_time_hour = re.findall('(\d+)시', when)[0]
                 # 18시 30분 이런식으로 표현시
-                elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                if re.findall('\d+\s*시\s*(\d+)\s*분', when):
                     when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
                     when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                # 18시 이런식으로만 표현될땐 ~
+                elif re.findall('(\d+)\s*시', when):
+                    when_time_hour = re.findall('(\d+)시', when)[0]
+
 
                 print(f'when_date_year: {when_date_year}')
                 print(f'when_date_month: {when_date_month}')
@@ -666,28 +684,31 @@ def jungnanggu_movie_crawler(libGroup):
                 runtime = re.findall('(\d+)', runtime_pre)[0]
                 print(f'runtime: {runtime}')
 
-        d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-        t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
-        dt = datetime.datetime.combine(d, t)
 
-        library = Library.objects.get(library_code=libGroup)
-        # print(library)
+        # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+        if title:
+            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            dt = datetime.datetime.combine(d, t)
 
-        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+            library = Library.objects.get(library_code=libGroup)
+            # print(library)
 
-        if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
-            movie, movie_created_bool = Movie.objects.get_or_create(
-                library=library,
-                title=title,
-                when=dt,
-                place=place,
-                runtime=runtime,
-            )
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
 
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                )
+
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
-def Seongbukgu_movie_crawler(libGroup):
+def seongbukgu_movie_crawler(libGroup):
 
     url = "https://www.sblib.seoul.kr/snlib/menu/10457/program/30124/movieList.do"
 
@@ -735,13 +756,16 @@ def Seongbukgu_movie_crawler(libGroup):
                 if re.findall('(\d{1,2}):', when):
                     when_time_hour = re.findall('(\d{1,2}):', when)[0]
                     when_time_minuite = re.findall('\d{1,2}:(\d{1,2})', when)[0]
-                # 18시 이런식으로 표현될땐 ~
-                elif re.findall('(\d+)\s*시', when):
-                    when_time_hour = re.findall('(\d+)시', when)[0]
+
                 # 18시 30분 이런식으로 표현시
                 elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
                     when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
                     when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                # 18시 이런식으로 표현될땐 ~
+                elif re.findall('(\d+)\s*시', when):
+                    when_time_hour = re.findall('(\d+)시', when)[0]
+
 
                 print(f'when_date_year: {when_date_year}')
                 print(f'when_date_month: {when_date_month}')
@@ -754,28 +778,123 @@ def Seongbukgu_movie_crawler(libGroup):
                 print(f'place: {place}')
 
 
+        # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+        if title:
+            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            dt = datetime.datetime.combine(d, t)
+
+            library = Library.objects.get(library_code=libGroup)
+            # print(library)
+
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                )
+
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
-        d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
-        t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
-        dt = datetime.datetime.combine(d, t)
+def songpagu_movie_crawler(libGroup):
 
-        library = Library.objects.get(library_code=libGroup)
-        # print(library)
+    params = {
+        'LIBCODE': libGroup,
+    }
+    url = "http://www.splib.or.kr/movie.do?" + parse.urlencode(params)
 
-        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+    request = requests.get(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
 
-        if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
-            movie, movie_created_bool = Movie.objects.get_or_create(
-                library=library,
-                title=title,
-                when=dt,
-                place=place,
-                runtime=runtime,
-            )
+    movie_tables = soup.select('div.contents > table')
 
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    for movie_table in movie_tables:
+        title = ""  # 제목
+        when = ""  # 일시
+        when_date_year = 0
+        when_date_month = 0
+        when_date_day = 0
+        when_time_hour = 0
+        when_time_minuite = 0
+        runtime = 0  # 런타임
+        place = ""  # 장소
 
+        items_pre = movie_table.select('tr')
+
+        for item_pre in items_pre:
+            item_name = item_pre.select_one('th').get_text(strip=True)
+
+            if item_name == "제목":
+                title = item_pre.select_one('td.tb').get_text(strip=True)
+                print(f'title: {title}')
+
+            elif item_name == "상영일시":
+                when = item_pre.select_one('td').get_text(strip=True)
+                print(f'when: {when}')  # 2019년 04월 07일 (일요일) 14시 00분
+
+                when_date_year = re.findall('(\d\d\d\d)', when)[0]
+                when_date_month = re.findall('(\d{1,2})\s*월', when)[0]
+                when_date_day = re.findall('(\d{1,2})\s*일', when)[0]
+
+                # 18:00 이런식으로 표현시
+                if re.findall('(\d{1,2}):', when):
+                    when_time_hour = re.findall('(\d{1,2}):', when)[0]
+                    when_time_minuite = re.findall('\d{1,2}:(\d{1,2})', when)[0]
+                # 18시 30분 이런식으로 표현시
+                elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                    when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
+                    when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                # 18시 이런식으로 표현될땐 ~
+                elif re.findall('(\d+)\s*시', when):
+                    when_time_hour = re.findall('(\d+)시', when)[0]
+
+                print(f'when_date_year: {when_date_year}')
+                print(f'when_date_month: {when_date_month}')
+                print(f'when_date_day: {when_date_day}')
+                print(f'when_time_hour: {when_time_hour}')
+                print(f'when_time_minuite: {when_time_minuite}')
+
+
+            elif item_name == "상영장소":
+                place = item_pre.select_one('td').get_text(strip=True)
+                print(f'place: {place}')
+
+            elif item_name == "상영정보":
+                runtime = item_pre.select_one('td').get_text(strip=True)
+
+                if re.findall('(\d+)', runtime):
+                    runtime = re.findall('(\d+)', runtime)[0]
+
+                print(f'runtime: {runtime}')
+
+        # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
+        if title:
+            d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+            t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+            dt = datetime.datetime.combine(d, t)
+
+            library = Library.objects.get(library_code=libGroup)
+            # print(library)
+
+            # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+            if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+                movie, movie_created_bool = Movie.objects.get_or_create(
+                    library=library,
+                    title=title,
+                    when=dt,
+                    place=place,
+                    runtime=runtime,
+                )
+
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
 def get_extra_info(movie,title):
@@ -906,7 +1025,6 @@ def get_extra_info(movie,title):
         dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["num"]+=1
         dict_log["no_extra_info_movie"][movie.library.library_district.district_name]["list"].append(movie.title)
 
-
 def upadete_google_image(movie,title):
 
     search_term = title
@@ -935,6 +1053,7 @@ def main_movie_crawler():
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
             "성북구": {"num": 0, "list": []},
+            "송파구": {"num": 0, "list": []},
         },
         "no_extra_info_movie": {
             "동대문구": {"num": 0, "list": []},
@@ -942,6 +1061,7 @@ def main_movie_crawler():
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
             "성북구": {"num": 0, "list": []},
+            "송파구": {"num": 0, "list": []},
         },
         "deleted_movie": {
             "동대문구": {"num": 0, "list": []},
@@ -949,6 +1069,7 @@ def main_movie_crawler():
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
             "성북구": {"num": 0, "list": []},
+            "송파구": {"num": 0, "list": []},
         },
         "total_movie": {
             "동대문구": {"before": 0, "now": 0, "after": 0},
@@ -956,6 +1077,7 @@ def main_movie_crawler():
             "광진구": {"before": 0, "now": 0, "after": 0},
             "중랑구": {"before": 0, "now": 0, "after": 0},
             "성북구": {"before": 0, "now": 0, "after": 0},
+            "송파구": {"before": 0, "now": 0, "after": 0},
         },
     }
 
@@ -1004,8 +1126,16 @@ def main_movie_crawler():
 
     ###### 성북구 크롤러 #####
     seongbukgu_area_code = "snlib"  # 한곳이라 걍 변수로만함.
-    Seongbukgu_movie_crawler(seongbukgu_area_code)
+    seongbukgu_movie_crawler(seongbukgu_area_code)
     print(f'{seongbukgu_area_code}#############################################################################################################################')
+
+    ###### 송파구 크롤러 #####
+    songpagu_area_code_list = ['SPJ', 'SPC', 'SPG', 'SPE', 'SP1', 'SP2', 'SP3', 'SP4', 'SPM']
+
+    for libGroup in songpagu_area_code_list:
+        songpagu_movie_crawler(libGroup)
+        print(f'{libGroup} #####################################################################################################################################')
+
 
     # 현제시간 - 5분
     now_date_before_5_min = timezone.now() - timezone.timedelta(minutes=5)
