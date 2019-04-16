@@ -687,6 +687,96 @@ def jungnanggu_movie_crawler(libGroup):
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
+def Seongbukgu_movie_crawler(libGroup):
+
+    url = "https://www.sblib.seoul.kr/snlib/menu/10457/program/30124/movieList.do"
+
+    request = requests.get(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
+
+    movie_dls = soup.select('ul.movie-list dl')
+
+    for movie_dl in movie_dls:
+
+        title = ""  # 제목
+        when = ""  # 일시
+        when_date_year = 0
+        when_date_month = 0
+        when_date_day = 0
+        when_time_hour = 0
+        when_time_minuite = 0
+        runtime = 0  # 런타임
+        place = ""  # 장소
+
+        title = movie_dl.select_one('dt').get_text(strip=True).replace("제 목", "")
+        print(f'title: {title}')
+
+        #     item_names_pre = movie_dl.select('dd > strong.tit')
+        items_pre = movie_dl.select('dd')
+        for item_pre in items_pre:
+            item_name = item_pre.select_one('strong.tit').get_text(strip=True)
+
+            if item_name == "시 간":
+                runtime = item_pre.get_text(strip=True).replace("시 간", "")
+                runtime = re.findall('(\d+)', runtime)[0]
+                print(f'runtime: {runtime}')
+
+
+            elif item_name == "상영날짜":
+                when = item_pre.get_text(strip=True).replace("상영날짜", "")
+                print(f'when: {when}')  # 2019.04.27.(토) 오후 4시
+
+                when_date_year = re.findall('(\d\d\d\d).', when)[0]
+                when_date_month = re.findall('\d\d\d\d.(\d{1,2}).', when)[0]
+                when_date_day = re.findall('\d\d\d\d.\d{1,2}.(\d{1,2})', when)[0]
+
+                # 18:00 이런식으로 표현시
+                if re.findall('(\d{1,2}):', when):
+                    when_time_hour = re.findall('(\d{1,2}):', when)[0]
+                    when_time_minuite = re.findall('\d{1,2}:(\d{1,2})', when)[0]
+                # 18시 이런식으로 표현될땐 ~
+                elif re.findall('(\d+)\s*시', when):
+                    when_time_hour = re.findall('(\d+)시', when)[0]
+                # 18시 30분 이런식으로 표현시
+                elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                    when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
+                    when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                print(f'when_date_year: {when_date_year}')
+                print(f'when_date_month: {when_date_month}')
+                print(f'when_date_day: {when_date_day}')
+                print(f'when_time_hour: {when_time_hour}')
+                print(f'when_time_minuite: {when_time_minuite}')
+
+            elif item_name == "상영장소":
+                place = item_pre.get_text(strip=True).replace("상영장소", "")
+                print(f'place: {place}')
+
+
+
+
+        d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+        t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+        dt = datetime.datetime.combine(d, t)
+
+        library = Library.objects.get(library_code=libGroup)
+        # print(library)
+
+        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+        if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+            movie, movie_created_bool = Movie.objects.get_or_create(
+                library=library,
+                title=title,
+                when=dt,
+                place=place,
+                runtime=runtime,
+            )
+
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+
 
 def get_extra_info(movie,title):
 
@@ -844,24 +934,28 @@ def main_movie_crawler():
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
+            "성북구": {"num": 0, "list": []},
         },
         "no_extra_info_movie": {
             "동대문구": {"num": 0, "list": []},
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
+            "성북구": {"num": 0, "list": []},
         },
         "deleted_movie": {
             "동대문구": {"num": 0, "list": []},
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
             "중랑구": {"num": 0, "list": []},
+            "성북구": {"num": 0, "list": []},
         },
         "total_movie": {
             "동대문구": {"before": 0, "now": 0, "after": 0},
             "성동구": {"before": 0, "now": 0, "after": 0},
             "광진구": {"before": 0, "now": 0, "after": 0},
             "중랑구": {"before": 0, "now": 0, "after": 0},
+            "성북구": {"before": 0, "now": 0, "after": 0},
         },
     }
 
@@ -908,8 +1002,10 @@ def main_movie_crawler():
     jungnanggu_movie_crawler(jungnanggu_area_code)
     print(f'{jungnanggu_area_code}#############################################################################################################################')
 
-
-
+    ###### 성북구 크롤러 #####
+    seongbukgu_area_code = "snlib"  # 한곳이라 걍 변수로만함.
+    Seongbukgu_movie_crawler(seongbukgu_area_code)
+    print(f'{seongbukgu_area_code}#############################################################################################################################')
 
     # 현제시간 - 5분
     now_date_before_5_min = timezone.now() - timezone.timedelta(minutes=5)
