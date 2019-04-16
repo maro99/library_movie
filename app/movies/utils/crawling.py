@@ -587,6 +587,107 @@ def gwangjingu_movie_crawler(area_code, year, month):
 #     table_rows = soup.select('table.table700 > tbody > tr')
 
 
+
+def jungnanggu_movie_crawler(libGroup):
+
+    # 전체 페이지에서 타이틀 쪼개지는 경우 있어서. 디테일 들어가서 각각 정보 크롤링 해주겠슴.
+    url = "http://www.jungnanglib.seoul.kr/jnlib/index.php?g_page=event&m_page=event04"
+    request = requests.get(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
+    movie_a_tags = soup.select("div.data_wrapper")
+    url_nums = []  # 각 디테일 가는 번호 여기 저장.
+    for movie_a_tag in movie_a_tags:
+
+        a_tag = movie_a_tag.select_one("h3 > a").get('href')
+        #     print(a_tag)
+        #     ./index.php?g_page=event&m_page=event04&libCho=MA&libCho=MA&act=movie_view&mvCode=228
+        if re.findall('Code=(\d*)', a_tag):
+            url_nums.append(re.findall('Code=(\d*)', a_tag)[0])
+
+    # 뽑아낸 url_num으로 각 detail page크롤링
+    root_url = "http://www.jungnanglib.seoul.kr/jnlib/index.php?g_page=event&m_page=event04&libCho=MA&libCho=MA&act=movie_view&mvCode="
+
+    for url_num in url_nums:
+
+        title = ""  # 제목
+
+        when = ""  # 일시
+        when_date_year = 0
+        when_date_month = 0
+        when_date_day = 0
+        when_time_hour = 0
+        when_time_minuite = 0
+
+        runtime = 0  # 런타임
+        place = ""  # 장소
+
+        detail_url = root_url + url_num
+        request = requests.get(detail_url)
+        response = request.text
+        soup = BeautifulSoup(response, 'lxml')
+        movie_box = soup.select_one("div.data_info")
+
+        title = movie_box.select_one('h3').get_text(strip=True)
+        print(f'title: {title}')
+
+        lis = movie_box.select('li')
+        for li in lis:
+            item_name = li.select_one('span.item').get_text(strip=True)
+
+            if item_name == "일시":
+                when = li.select_one('span.value').get_text(strip=True)
+                print(f'when: {when}')  # 2019년 04월 27일  15시 00분 (토) 상영
+
+                when_date_year = re.findall('(\d\d\d\d)', when)[0]
+                when_date_month = re.findall('(\d{1,2})\s*월', when)[0]
+                when_date_day = re.findall('(\d{1,2})\s*일', when)[0]
+
+                # 18시 이런식으로만 표현될땐 ~
+                if re.findall('(\d+)\s*시', when):
+                    when_time_hour = re.findall('(\d+)시', when)[0]
+                # 18시 30분 이런식으로 표현시
+                elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                    when_time_hour = re.findall('(\d+)\s*시\s*\d+\s*분', when)[0]
+                    when_time_minuite = re.findall('\d+\s*시\s*(\d+)\s*분', when)[0]
+
+                print(f'when_date_year: {when_date_year}')
+                print(f'when_date_month: {when_date_month}')
+                print(f'when_date_day: {when_date_day}')
+                print(f'when_time_hour: {when_time_hour}')
+                print(f'when_time_minuite: {when_time_minuite}')
+
+            elif item_name == "장소":
+                place = li.select_one('span.value').get_text(strip=True)
+                print(f'place: {place}')
+
+            elif item_name == "시간":
+                runtime_pre = li.select_one('span.value').get_text(strip=True)
+                runtime = re.findall('(\d+)', runtime_pre)[0]
+                print(f'runtime: {runtime}')
+
+        d = datetime.date(int(when_date_year), int(when_date_month), int(when_date_day))
+        t = datetime.time(int(when_time_hour), int(when_time_minuite), 0)
+        dt = datetime.datetime.combine(d, t)
+
+        library = Library.objects.get(library_code=libGroup)
+        # print(library)
+
+        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+
+        if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+            movie, movie_created_bool = Movie.objects.get_or_create(
+                library=library,
+                title=title,
+                when=dt,
+                place=place,
+                runtime=runtime,
+            )
+
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+
+
 def get_extra_info(movie,title):
 
     global dict_log
@@ -742,21 +843,25 @@ def main_movie_crawler():
             "동대문구": {"num": 0, "list": []},
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
+            "중랑구": {"num": 0, "list": []},
         },
         "no_extra_info_movie": {
             "동대문구": {"num": 0, "list": []},
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
+            "중랑구": {"num": 0, "list": []},
         },
         "deleted_movie": {
             "동대문구": {"num": 0, "list": []},
             "성동구": {"num": 0, "list": []},
             "광진구": {"num": 0, "list": []},
+            "중랑구": {"num": 0, "list": []},
         },
         "total_movie": {
             "동대문구": {"before": 0, "now": 0, "after": 0},
             "성동구": {"before": 0, "now": 0, "after": 0},
             "광진구": {"before": 0, "now": 0, "after": 0},
+            "중랑구": {"before": 0, "now": 0, "after": 0},
         },
     }
 
@@ -788,12 +893,22 @@ def main_movie_crawler():
 #         print(f'{area_code}#############################################################################################################################')
 #
 #
+
+
 #     ##### 광진구 크롤러 #####
     gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
 #     정보 , 중곡문화체육센터, 구의제3동
     for area_code in gwangjingu_area_code_list:
         gwangjingu_movie_crawler(area_code,year,month)
         print(f'{area_code}#############################################################################################################################')
+
+
+    ###### 중랑구 크롤러 #####
+    jungnanggu_area_code = "JMA"  # 한곳이라 걍 변수로만함.
+    jungnanggu_movie_crawler(jungnanggu_area_code)
+    print(f'{jungnanggu_area_code}#############################################################################################################################')
+
+
 
 
     # 현제시간 - 5분

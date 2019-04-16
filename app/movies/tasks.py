@@ -17,9 +17,8 @@ User = get_user_model()
 @celery_app.task(name="crawling_then_send_result_email")
 def crawling_then_send_result_email():
 
-    # 지역 없으면 지역정보 부터 업데이트
-    if not District.objects.all() :
-        get_info()
+    # 새지역 추가 됬을 수도 있으니까 항상 지역 ,하부 도서관 전부 get_or_create하고 시작하자.
+    get_info()
 
     # 영화 크롤링
     dict_log_result = main_movie_crawler()

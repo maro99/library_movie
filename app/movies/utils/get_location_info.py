@@ -102,7 +102,18 @@ def get_info():
                 'lng': '127.091892',
             },
         ],
+        "중랑구": [
+            {
+                'name': "중랑구립정보도서관",
+                'code': 'JMA',
+                'address': '서울특별시 중랑구 신내로15길 197',
+                'lat': '37.615254',
+                'lng': '127.086901',
+            },
+        ],
     }
+
+    # 중랑구중앙과 동대문중앙 code겹쳐서 중랑구쪽 임으로 JMA라 코드 부여해 놓음
 
     for district_key, district_value in district_library_info_dict.items():
 
