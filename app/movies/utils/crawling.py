@@ -1063,9 +1063,13 @@ def get_extra_info(movie,title):
                 age = age_pre.get_text()
                 print(f'age: {age}')
 
-        story_pre = soup.select_one('div.video')
+        story_pre = soup.select_one('div.story_area > p.con_tx')
         if story_pre:
             story = story_pre.get_text()
+
+            # 제작노트 같이 크롤링 된다면 잘라서 저장 하겠다.
+
+
             print(f'story: {story}')
 
         # # 썸네일이 이미 없는 경우에만 업데이트를 하자 ------> 일단 안지우겠슴.
