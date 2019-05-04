@@ -99,12 +99,30 @@ dict_log = {
 #     ##### 동대문구 크롤러##### (월별)
 def dongdaemungu_movie_crawler(year,libGroup):
 
-    # MA(동대문) 의 경우만 2페이지까지 크롤링
-    page_num_list = ['1']
-    if libGroup == 'MA':
-        page_num_list = ['1','2']
+
+    # 몇페이지 까지 있나 알아내기 위해 초반 패이징 텝 크롤링 해서 판단해야함 .
+
+    params = {
+        'manageCd': libGroup,
+    }
+    url = "https://www.l4d.or.kr/intro/menu/10111/program/30030/movieList.do?" + parse.urlencode(params)
+
+    request = requests.get(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
+    is_next_page = soup.select('p.paging > a ')
+
+    if is_next_page:
+        page_num_list = ['1', '2']
+        print(f'more than 1 page {True}')
+    else:
+        page_num_list = ['1']
+        print(f'more than 1 page {False}')
 
 
+
+
+    # 각 페이지에 대해서 크롤링
     for page_num in page_num_list:
 
         params = {
@@ -133,7 +151,13 @@ def dongdaemungu_movie_crawler(year,libGroup):
             runtime = 0  # 런타임
             place = ""  # 장소
 
-            title = movie_li.select_one('dt.tit').get_text(strip=True)
+            title_pre  = movie_li.select_one('dt.tit')
+
+            if title_pre:
+                title = title_pre.get_text(strip=True)
+            else:
+                # 해당 페이지에 영화 없는 것이기 때문에 for문 나가준다.
+                break
             print(f'title: {title}')
 
             lis = movie_li.select('dd > ul.clearfix > li')
@@ -368,22 +392,30 @@ def gwangjingu_movie_crawler(area_code, year, month):
             for index, dd in enumerate(dds):
                 if index == 1:
                     runtime_pre = dd.contents[1].strip()
-                    runtime = re.findall('(\d\d*)', runtime_pre)[0]
+                    runtime = re.findall('(\d\d*)', runtime_pre)
+                    if runtime:
+                        runtime = runtime[0]
                     print(f'runtime: {runtime}')  # 런타임
 
                 elif index == 3:
                     #                     print(f'상영일자 : {dd.contents[1]}') #상영일자(날짜 + 시간 ) # 2018.10.27(토) 오후 2시 or 오후2시, 오전1시
                     when = dd.contents[1]
-                    when_date = re.findall("(\S*)\(", when)[0]  # 2018.10.27
-                    when_date_year = when_date.split('.')[0]
-                    when_date_month = when_date.split('.')[1]
-                    when_date_day = when_date.split('.')[2]
+                    when_date = re.findall("(\S*)\(", when)
+                    if when_date and len(when_date[0].split('.')) >=3:
+                        when_date = when_date[0]  # 2018.10.27
+                        when_date_year = when_date.split('.')[0]
+                        when_date_month = when_date.split('.')[1]
+                        when_date_day = when_date.split('.')[2]
                     print(f'when_date_year:{when_date_year}')
                     print(f'month : {when_date_month}')  # 상영 날짜
                     print(f'day : {when_date_day}')  #
 
-                    when_time_pre = re.findall("\)\s*(.{4,6})시", when)[0]
-                    #                     print(f'상영 시간 : {when_time_pre}') # 상영 시간  # 오후 2시
+                    when_time_pre = re.findall("\)\s*(.{4,6})시", when)
+
+                    if when_time_pre:
+                        when_time_pre = when_time_pre[0]
+
+                    # print(f'상영 시간 : {when_time_pre}') # 상영 시간  # 오후 2시
                     if '오후' in when_time_pre:
                         when_time_hour = int(re.findall("오후(.*\d*)", when_time_pre)[0].strip()) + 12
 
@@ -394,8 +426,8 @@ def gwangjingu_movie_crawler(area_code, year, month):
 
                     print('@@@@@@@@@@@@@@@@@@')
 
-            # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다.
-            if title:
+            # 만약 한개의 영화 title이라도 크롤링 했을때만 영화 저장 단계 넘어간다. + 영화의 hour 크롤링 제대로 했을때
+            if title and when_time_hour:
                 # 시간이 0시 ~ 9시 인 경우 도서관 운영 안하는 시간 이므로 + 12를 해준다.
                 when_time_hour = int(when_time_hour)
                 if 0 < when_time_hour < 9:
