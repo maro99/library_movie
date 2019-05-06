@@ -31,16 +31,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Seoul' #Celery beat가 스케줄러이기 때문에 시간에 대한 정의를 해야함
 
 
-# SENTRY
-
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-sentry_sdk.init(
-    dsn="https://fcb6a3ef5a044cbdbc4669b560008ba6@sentry.io/1453038",
-    integrations=[DjangoIntegration()]
-)
-
 
 LOG_DIR = os.path.join(ROOT_DIR, '.log')
 if not os.path.exists(LOG_DIR):

@@ -1,5 +1,8 @@
 from .base import *
 import sys
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 secrets = json.load(open(os.path.join(SECRET_DIR,'production.json')))
 
 RUNSERVER = 'runserver' in sys.argv
@@ -56,6 +59,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Seoul' #Celery beat가 스케줄러이기 때문에 시간에 대한 정의를 해야함
 
 
+
+# SENTRY
+SENTRY_DNS = secrets['SENTRY_DNS']
+sentry_sdk.init(
+    dsn=SENTRY_DNS,
+    integrations=[DjangoIntegration()]
+)
 
 # Media
 DEFAULT_FILE_STORAGE = "config.storages.S3DefaultStorage"
