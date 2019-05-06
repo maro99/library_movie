@@ -19,6 +19,12 @@ INSTALLED_APPS += [
     'storages',
 ]
 
+
+# DRF
+DEFAULT_RENDERER_CLASSES =  (
+        'rest_framework.renderers.JSONRenderer',
+    )
+
 # DB
 DATABASES = secrets['DATABASES']
 
