@@ -8,7 +8,7 @@ from movies.views.pages import main_page
 
 urlpatterns = [
     path('',main_page, name='main_page'),
-    path('admin/', admin.site.urls),
+    path('control/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('members/',include('members.urls.views') ),
     path('movies/' ,include('movies.urls.views')),
