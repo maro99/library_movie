@@ -1,12 +1,12 @@
 from django.urls import path
 
 from members import apis
-from members.apis import UserList
+# from members.apis import UserList
 
 app_name = 'members-api'
 
 urlpatterns = [
-    path('', UserList.as_view()),
+    # path('', UserList.as_view()),
     path('login', apis.Login.as_view()),
     path('auth-test', apis.AuthenticationTest.as_view()),
     path('signup', apis.Signup.as_view()),
