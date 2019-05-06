@@ -13,9 +13,9 @@ from members.tokens import account_activation_token
 User = get_user_model()
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class UserList(generics.ListAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
 
 class Signup(APIView):
