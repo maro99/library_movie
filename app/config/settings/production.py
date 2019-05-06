@@ -21,9 +21,16 @@ INSTALLED_APPS += [
 
 
 # DRF
-DEFAULT_RENDERER_CLASSES =  (
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+   ),
+    # production 경우에는 browsableapirenderer 꺼주겠다.
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     )
+}
 
 # DB
 DATABASES = secrets['DATABASES']

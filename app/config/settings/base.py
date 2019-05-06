@@ -80,13 +80,6 @@ LOGIN_REDIRECT_URL = '/' # home
 
 
 # DRF
-
-# 기본적으로는 render를 html, json 두가지 경우 가능하게 하고 production 경우에는 browsableapirenderer 꺼주겠다.
-DEFAULT_RENDERER_CLASSES =  (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    )
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 # username, password넣는 옵션.
@@ -95,7 +88,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',     # basic, sessoin, 이 기본이긴 하다.
         # 'rest_framework.authentication.SessionAuthentication', # ( api아닌 일반에서는 session쓰지만 이건 DRF관련 인증 설정이니지워도 된다.)
    ),
-   'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
+    # 기본적으로는 render를 html, json 두가지 경우 가능하게 하고 production 경우에는 browsableapirenderer 꺼주겠다.
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }
 
 
