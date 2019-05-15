@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from movies.models import Movie
-from movies.serializers import MovieMainSerializer, MovieMainGenreSerializer
+from movies.serializers import MovieMainSerializer, MovieMainGenreSerializer, MovieMainDistamceSerializer
 
 
 class MovieListByDate(APIView):
@@ -53,5 +53,15 @@ class MovieListByRating(APIView):
         #         movies_filtered.append(movie)
 
         serializer = MovieMainGenreSerializer(movies, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MovieListByDistance(APIView):
+
+    def get(self, request, format=None):
+        movies = Movie.objects.order_by('when')
+
+        serializer = MovieMainDistamceSerializer(movies, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

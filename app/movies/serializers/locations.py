@@ -42,5 +42,13 @@ class LibraryExtraInfoSerializer(LibraryBaseSerializer):
         )
 
 
+class LibraryDistanceSerializer(LibraryBaseSerializer):
+
+    class Meta(LibraryBaseSerializer.Meta):
+        fields = LibraryBaseSerializer.Meta.fields + (
+            'lat',
+            'lng',
+        )
+
 
 

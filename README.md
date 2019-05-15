@@ -19,7 +19,7 @@
 
 ### Stacks   
 
-`Python`, `Django`,  `DRF(Django REST framework)`,  `AWS RDS`,  `AWS ElasticBeanstalk`, `AWS ElasticCache`,`AWS Route 53`, `Docker`,`Nginx`, `uWSGI`, `Celery`,`Sentry`   
+`Python`, `Django`,  `DRF(Django REST framework)`,  `AWS RDS`,  `AWS ElasticBeanstalk`, `AWS ElasticCache`,`AWS Route 53`, `Docker`,`Nginx`, `uWSGI`, `Celery`,`Sentry`,`html`,`jquery`,`Ajax`
 
 ---  
 &nbsp;

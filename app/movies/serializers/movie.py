@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from movies.models import Movie
-from .locations import LibrarySerializer
+from .locations import LibrarySerializer, LibraryDistanceSerializer
 
 
 class MovieBaseSerializer(serializers.ModelSerializer):
@@ -24,6 +24,15 @@ class MovieMainGenreSerializer(MovieBaseSerializer):
     class Meta(MovieBaseSerializer.Meta):
         fields = MovieBaseSerializer.Meta.fields + (
             'genre',
+        )
+
+
+class MovieMainDistamceSerializer(MovieBaseSerializer):
+    library = LibraryDistanceSerializer(read_only=True)
+
+    class Meta(MovieBaseSerializer.Meta):
+        fields = MovieBaseSerializer.Meta.fields + (
+            'library',
         )
 
 
