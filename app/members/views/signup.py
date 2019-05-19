@@ -43,7 +43,9 @@ def signup(request):
 def user_activate(request,uidb64,token):
 
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64.encode('utf-8')))
+        # uid = force_text(urlsafe_base64_decode(uidb64.encode('utf-8')))
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        print(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {uid}')
         user = User.objects.get(pk=uid)
 
     except(TypeError. ValueError, OverflowError, User.DoesNotExist):

@@ -44,7 +44,8 @@ def send_email(pk):
     message = render_to_string('members/account_activate_email.html', {
         'user': user,  # 생성한 사용자 객체
         'domain': domain, #localhost:8000', "maro5.com"  # 이거 추후에 배포시에는 바꿔줘야함 #########
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),  # 생성한 사용자 객체의 pk를 암호화한 값
+        # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),  # 생성한 사용자 객체의 pk를 암호화한 값  ---> 구 코드. 이미 str된것을  다시 decode('utf-8')해서 생긴 애러 ?
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),  # 생성한 사용자 객체의 pk를 암호화한 값
         'token': account_activation_token.make_token(user)  # 생성한 사용자 객체를 통해 생성한 token값.
     })
 
