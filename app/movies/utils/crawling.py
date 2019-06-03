@@ -974,6 +974,10 @@ def yeongdeungpogu_movie_crawler(libGroup):
                         if ']' in title:  # [우리말 자막]레고 배트맨 : 더 무비 이런경우 앞의 괄호부분없애줌.
                             title_before = title.split(']')
                             title = title_before[1]
+                        elif '무료영화상영' and '"' in title:  # 무료영화상영 "아기배달부 스토크"  이경우 안쪽만 빼주자.
+                            title_before_pre = re.findall('"(.*)"', title)
+                            if title_before_pre:
+                                title = title_before_pre[0]
 
                         print(f'title: {title}')
                     else:
