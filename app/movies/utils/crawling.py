@@ -21,7 +21,7 @@ from urllib import parse
 
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
-
+import time
 
 # 상영일 저장 기준 위한 변수들
 
@@ -51,7 +51,6 @@ after_months_last_day_aware = timezone.make_aware(after_months_last_day)
 
 # Dict log # 크롤링 결과 담는 dict
 
-
 dict_log = {
     "updated_movie": {
         "동대문구": {"num": 0,"list": []},
@@ -62,16 +61,40 @@ dict_log = {
         "송파구": {"num": 0, "list": []},
         "영등포구": {"num": 0, "list": []},
         "은평구": {"num": 0, "list": []},
+        "양천구": {"num": 0, "list": []},
+        "서대문구": {"num": 0, "list": []},
+        "마포구": {"num": 0, "list": []},
+        "동작구": {"num": 0, "list": []},
+        "도봉구": {"num": 0, "list": []},
+        "노원구": {"num": 0, "list": []},
+        "용산구": {"num": 0, "list": []},
+        "구로구": {"num": 0, "list": []},
+        "강서구": {"num": 0, "list": []},
+        "강동구": {"num": 0, "list": []},
+        "강남구": {"num": 0, "list": []},
+        "종로구": {"num": 0, "list": []},
     },
     "no_extra_info_movie" : {
-        "동대문구":{"num":0,"list":[]},
-        "성동구":{"num":0,"list":[]},
+        "동대문구": {"num": 0,"list": []},
+        "성동구": {"num": 0,"list": []},
         "광진구": {"num": 0,"list": []},
         "중랑구": {"num": 0, "list": []},
         "성북구": {"num": 0, "list": []},
         "송파구": {"num": 0, "list": []},
         "영등포구": {"num": 0, "list": []},
         "은평구": {"num": 0, "list": []},
+        "양천구": {"num": 0, "list": []},
+        "서대문구": {"num": 0, "list": []},
+        "마포구": {"num": 0, "list": []},
+        "동작구": {"num": 0, "list": []},
+        "도봉구": {"num": 0, "list": []},
+        "노원구": {"num": 0, "list": []},
+        "용산구": {"num": 0, "list": []},
+        "구로구": {"num": 0, "list": []},
+        "강서구": {"num": 0, "list": []},
+        "강동구": {"num": 0, "list": []},
+        "강남구": {"num": 0, "list": []},
+        "종로구": {"num": 0, "list": []},
     },
     "total_movie": {
         "동대문구": {"before": 0, "now": 0, "after": 0},
@@ -82,6 +105,18 @@ dict_log = {
         "송파구": {"before": 0, "now": 0, "after": 0},
         "영등포구": {"before": 0, "now": 0, "after": 0},
         "은평구": {"before": 0, "now": 0, "after": 0},
+        "양천구": {"before": 0, "now": 0, "after": 0},
+        "서대문구": {"before": 0, "now": 0, "after": 0},
+        "마포구": {"before": 0, "now": 0, "after": 0},
+        "동작구": {"before": 0, "now": 0, "after": 0},
+        "도봉구": {"before": 0, "now": 0, "after": 0},
+        "노원구": {"before": 0, "now": 0, "after": 0},
+        "용산구": {"before": 0, "now": 0, "after": 0},
+        "구로구": {"before": 0, "now": 0, "after": 0},
+        "강서구": {"before": 0, "now": 0, "after": 0},
+        "강동구": {"before": 0, "now": 0, "after": 0},
+        "강남구": {"before": 0, "now": 0, "after": 0},
+        "종로구": {"before": 0, "now": 0, "after": 0},
     },
     # "deleted_movie": {
     #     "동대문구": {"num": 0, "list": []},
@@ -105,23 +140,29 @@ def save_movie(when_time_hour, when_date_year, when_date_month, when_date_day, w
     t = datetime.time(when_time_hour, int(when_time_minuite), 0)
     dt = datetime.datetime.combine(d, t)
 
-    library = Library.objects.get(library_code=libGroup)
-    # print(library)
+    library = ""
+    try:
+        library = Library.objects.get(library_code=libGroup)
+    except:
+        pass
 
-    # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
+    # 도서관 코드 맞는 도서관 존재 할때만 이하 저장 실행.
+    if library:
 
-    # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
-    # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장.
 
-    # 현재 달보다 앞선것만 저장하자.
-    if dt >= now_date:
-        movie, movie_created_bool = Movie.objects.get_or_create(
-            library=library,
-            title=title,
-            when=dt,
-            place=place,
-            runtime=runtime,
-        )
+        # 이전월의 첫날 <=  상영일 <= 다음달의 마지막일 때만 저장. (이거 해제 하겠씀.).
+        # if dt >= before_months_first_day and dt <= after_months_last_day and dt >= now_date:
+
+        # 현재 달보다 앞선것만 저장하자.
+        if dt >= now_date:
+            movie, movie_created_bool = Movie.objects.get_or_create(
+                library=library,
+                title=title,
+                when=dt,
+                place=place,
+                runtime=runtime,
+            )
 
 
 # 영화 제목
@@ -851,101 +892,7 @@ def songpagu_movie_crawler(libGroup):
 def yeongdeungpogu_movie_crawler(libGroup):
 
     if libGroup == "ydpllc":
-        url = "http://" + libGroup + ".sen.go.kr/ydpllc/board/index.do?menu_idx=16&manage_idx=947"
-        request = requests.get(url)
-        response = request.text
-        soup = BeautifulSoup(response, 'lxml')
-
-        movie_tables = soup.select('div.search-results > div.row')  # 영화 없으면 아예 아래 포문 안들어가게 하겠슴.
-
-        for movie_table in movie_tables:
-
-            title = ""  # 제목
-            when = ""  # 일시
-            when_date_year = 0
-            when_date_month = 0
-            when_date_day = 0
-            when_time_hour = 0
-            when_time_minuite = 0
-            runtime = 0  # 런타임
-            place = ""  # 장소
-
-            # 제목 따로 a테그라 먼저 찾겠슴
-            title_pre = movie_table.select_one('div.box > div.item > div.bif > a.name')
-            if title_pre:
-                title = title_pre.get_text(strip=True)
-                print(f'title: {title}')
-            else:
-                print('영화제목없음')
-                continue  # 타이틀 없으면 다음 영화로 넘어감.
-
-            # 나머지정보들 묶여서 한번에 크롤링
-            item_pres = movie_table.select('div.box > div.item > div.bif > ul.con2 > li')
-
-            for item_pre in item_pres:
-                item_name_pre = item_pre.get_text()
-
-                if "상영일시" in item_name_pre:
-
-                    when = item_name_pre
-                    print(f'when: {when}')
-
-                    when_date_year_pre = re.findall('(\d\d\d\d)', when)
-                    if when_date_year_pre:
-                        when_date_year = when_date_year_pre[0]
-                    when_date_month_pre = re.findall('\d\d\d\d\s*-\s*(\d{1,2})', when)
-                    if when_date_month_pre:
-                        when_date_month = when_date_month_pre[0]
-                    when_date_day_pre = re.findall('\d\d\d\d\s*-\s*\d{1,2}\s*-\s*(\d{1,2})', when)
-                    if when_date_day_pre:
-                        when_date_day = when_date_day_pre[0]
-
-                    # 18:00 이런식으로 표현시
-                    if re.findall('(\d{1,2})\s*:', when):
-                        when_time_hour_pre = re.findall('(\d{1,2})\s*:', when)
-                        if when_time_hour_pre:
-                            when_time_hour = when_time_hour_pre[0]
-                        when_time_minuite_pre = re.findall('\d{1,2}\s*:\s*(\d{1,2})\s*', when)
-                        if when_time_minuite_pre:
-                            when_time_minuite = when_time_minuite_pre[0]
-                    # 18시 30분 이런식으로 표현시
-                    elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
-                        when_time_hour_pre = re.findall('(\d+)\s*시\s*\d+\s*분', when)
-                        if when_time_hour_pre:
-                            when_time_hour = when_time_hour_pre[0]
-                        when_time_minuite_pre = re.findall('\d+\s*시\s*(\d+)\s*분', when)
-                        if when_time_minuite_pre:
-                            when_time_minuite = when_time_minuite_pre[0]
-
-                    # 18시 이런식으로 표현될땐 ~
-                    elif re.findall('(\d+)\s*시', when):
-                        when_time_hour_pre = re.findall('(\d+)\s*시', when)
-                        if when_time_hour_pre:
-                            when_time_hour = when_time_hour_pre[0]
-
-                    print(f'when_date_year: {when_date_year}')
-                    print(f'when_date_month: {when_date_month}')
-                    print(f'when_date_day: {when_date_day}')
-                    print(f'when_time_hour: {when_time_hour}')
-                    print(f'when_time_minuite: {when_time_minuite}')
-
-
-                elif "상영장소" in item_name_pre:
-                    place_pre = item_name_pre.split(':')
-                    if place_pre:
-                        place = place_pre[1]
-                        print(f'place: {place}')
-
-                elif "상영시간" in item_name_pre:
-                    runtime_pre = re.findall('(\d+)', item_name_pre)
-                    if runtime_pre:
-                        runtime = runtime_pre[0]
-                        print(f'runtime: {runtime}')
-
-            if title and when_time_hour:
-                save_movie(when_time_hour, when_date_year, when_date_month, when_date_day, when_time_minuite, libGroup,
-                           title, place, runtime)
-            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        pass
     else:
         url = "http://www." + libGroup + ".or.kr/program/movieList.do"
         request = requests.get(url)
@@ -1180,6 +1127,183 @@ def eunpyeonggu_movie_crawler(libGroup):
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 
+# 서울시 교육청 통합 크롤러 약 100개 이상 한번에 크롤
+def seoul_massive_crawler(year,month):
+
+    # 요청 거부시 10초후 제시도 하는 함수
+    def get_url_data(url, max_tries=10):
+        for n in range(max_tries):
+            try:
+                return requests.get(url)
+            except requests.exceptions.RequestException:
+                if n == max_tries - 1:
+                    raise
+                time.sleep(10)
+
+    year = str(year)
+    month = str(month)
+    if len(month) ==1:
+        month = '0' + month
+
+    # 페이지 번호 뽑기위해 초벌 크롤
+    url = "https://lib.sen.go.kr/lib/board/index.do?plan_date=" + year + "-" + month + "&menu_idx=12&manage_idx=1121&board_idx=0&rowCount=50&plan_year=" + year + "&plan_month=" + month + "&viewPage=1&search_type=title%2Bcontent"
+    request = get_url_data(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
+
+    # 페이지 부터 뽑고 그것을 포문 돌아 보겠슴.
+    pages = []
+
+    page_button_parent = soup.find("div", {"id": "board_paging"})
+    if page_button_parent:
+        page_button = page_button_parent.select("a.paginate_button")
+        if page_button:
+            for i in range(len(page_button)):
+                pages.append(i + 1)
+
+    print(pages)
+    count = 0
+    for page in pages:
+        url = "https://lib.sen.go.kr/lib/board/index.do?plan_date=" + year + "-" + month + "&menu_idx=12&manage_idx=1121&board_idx=0&rowCount=50&plan_year=" + year + "&plan_month=" + month + "&viewPage=" + str(
+            page) + "&search_type=title%2Bcontent"
+        request = get_url_data(url)
+        response = request.text
+        soup = BeautifulSoup(response, 'lxml')
+
+        movie_tables = soup.select('div.search-results > div.row')  # 영화 없으면 아예 아래 포문 안들어가게 하겠슴.
+
+        for movie_table in movie_tables:
+            count += 1
+
+            title = ""  # 제목
+            when = ""  # 일시
+            when_date_year = 0
+            when_date_month = 0
+            when_date_day = 0
+            when_time_hour = 0
+            when_time_minuite = 0
+            runtime = 0  # 런타임
+            place = ""  # 장소
+
+            libGroup = ""
+
+            # 제목 따로 a테그라 먼저 찾겠슴
+            title_pre = movie_table.select_one('div.box > div.item > div.bif > a.name')
+
+            if title_pre:
+                title = title_pre.get("title")
+
+                if re.findall('\(.+\)\s*(.+)', title):  # (독립영화) 이월
+                    title_before_pre = re.findall('\(.+\)\s*(.+)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('(.+)\s*\(.+\)', title):  # 이월 (독립영화),(더빙),(자막) 등 빼주기위함.
+                    title_before_pre = re.findall('(.+)\s*\(.+\)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('\[.+\]\s*(.+)', title):  # [강서스크린] 웃는남자
+                    title_before_pre = re.findall('\[.+\]\s*(.+)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('(.+)\s*\[.+\]', title):  # 웃는남자 [강서스크린]
+                    title_before_pre = re.findall('(.+)\s*\[.+\]', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('용산시네마여행_(.+)', title):  # 용산시네마여행_
+                    title_before_pre = re.findall('용산시네마여행_(.+)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('독립영화상영_(.+)', title):  # 독립영화상영_
+                    title_before_pre = re.findall('독립영화상영_(.+)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                elif re.findall('힐링뮤직박스_(.+)', title):  # 힐링뮤직박스_
+                    title_before_pre = re.findall('힐링뮤직박스_(.+)', title)
+                    if title_before_pre:
+                        title = title_before_pre[0]
+                print(f'title: {title}')
+            else:
+                print('영화제목없음')
+                continue  # 타이틀 없으면 다음 영화로 넘어감.
+
+            # 나머지정보들 묶여서 한번에 크롤링
+            item_pres = movie_table.select('div.box > div.item > div.bif > ul.con2 > li')
+
+            found_libgroup = False  # 아래 코드 뽑을때 한번만 get하기 위함.
+            for item_pre in item_pres:
+
+                # 도서관 코드 뽑는것 추가.
+                if not found_libgroup and item_pre.get('class'):
+                    libGroup = item_pre.get('class')[0]
+                    found_libgroup = True
+
+                item_name_pre = item_pre.get_text()
+                if "상영일시" in item_name_pre:
+
+                    when = item_name_pre
+                    #                     print(f'when: {when}')
+
+                    when_date_year_pre = re.findall('(\d\d\d\d)', when)
+                    if when_date_year_pre:
+                        when_date_year = when_date_year_pre[0]
+                    when_date_month_pre = re.findall('\d\d\d\d\s*-\s*(\d{1,2})', when)
+                    if when_date_month_pre:
+                        when_date_month = when_date_month_pre[0]
+                    when_date_day_pre = re.findall('\d\d\d\d\s*-\s*\d{1,2}\s*-\s*(\d{1,2})', when)
+                    if when_date_day_pre:
+                        when_date_day = when_date_day_pre[0]
+
+                    # 18:00 이런식으로 표현시
+                    if re.findall('(\d{1,2})\s*:', when):
+                        when_time_hour_pre = re.findall('(\d{1,2})\s*:', when)
+                        if when_time_hour_pre:
+                            when_time_hour = when_time_hour_pre[0]
+                        when_time_minuite_pre = re.findall('\d{1,2}\s*:\s*(\d{1,2})\s*', when)
+                        if when_time_minuite_pre:
+                            when_time_minuite = when_time_minuite_pre[0]
+                    # 18시 30분 이런식으로 표현시
+                    elif re.findall('\d+\s*시\s*(\d+)\s*분', when):
+                        when_time_hour_pre = re.findall('(\d+)\s*시\s*\d+\s*분', when)
+                        if when_time_hour_pre:
+                            when_time_hour = when_time_hour_pre[0]
+                        when_time_minuite_pre = re.findall('\d+\s*시\s*(\d+)\s*분', when)
+                        if when_time_minuite_pre:
+                            when_time_minuite = when_time_minuite_pre[0]
+
+                    # 18시 이런식으로 표현될땐 ~
+                    elif re.findall('(\d+)\s*시', when):
+                        when_time_hour_pre = re.findall('(\d+)\s*시', when)
+                        if when_time_hour_pre:
+                            when_time_hour = when_time_hour_pre[0]
+
+                    print(f'when_date_year: {when_date_year}')
+                    print(f'when_date_month: {when_date_month}')
+                    print(f'when_date_day: {when_date_day}')
+                    print(f'when_time_hour: {when_time_hour}')
+                    print(f'when_time_minuite: {when_time_minuite}')
+
+
+                elif "상영장소" in item_name_pre:
+                    place_pre = item_name_pre.split(':')
+                    if place_pre:
+                        place = place_pre[1]
+                        print(f'place: {place}')
+
+                elif "상영시간" in item_name_pre:
+                    runtime_pre = re.findall('(\d+)', item_name_pre)
+                    if runtime_pre:
+                        runtime = runtime_pre[0]
+                        print(f'runtime: {runtime}')
+
+            print(f'libGroup : {libGroup}')
+
+            if title and when_time_hour:
+                save_movie(when_time_hour, when_date_year, when_date_month, when_date_day, when_time_minuite, libGroup,
+                           title, place, runtime)
+
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+
 def get_extra_info(movie,title):
 
     global dict_log
@@ -1343,6 +1467,18 @@ def main_movie_crawler():
             "송파구": {"num": 0, "list": []},
             "영등포구": {"num": 0, "list": []},
             "은평구": {"num": 0, "list": []},
+            "양천구": {"num": 0, "list": []},
+            "서대문구": {"num": 0, "list": []},
+            "마포구": {"num": 0, "list": []},
+            "동작구": {"num": 0, "list": []},
+            "도봉구": {"num": 0, "list": []},
+            "노원구": {"num": 0, "list": []},
+            "용산구": {"num": 0, "list": []},
+            "구로구": {"num": 0, "list": []},
+            "강서구": {"num": 0, "list": []},
+            "강동구": {"num": 0, "list": []},
+            "강남구": {"num": 0, "list": []},
+            "종로구": {"num": 0, "list": []},
         },
         "no_extra_info_movie": {
             "동대문구": {"num": 0, "list": []},
@@ -1353,6 +1489,18 @@ def main_movie_crawler():
             "송파구": {"num": 0, "list": []},
             "영등포구": {"num": 0, "list": []},
             "은평구": {"num": 0, "list": []},
+            "양천구": {"num": 0, "list": []},
+            "서대문구": {"num": 0, "list": []},
+            "마포구": {"num": 0, "list": []},
+            "동작구": {"num": 0, "list": []},
+            "도봉구": {"num": 0, "list": []},
+            "노원구": {"num": 0, "list": []},
+            "용산구": {"num": 0, "list": []},
+            "구로구": {"num": 0, "list": []},
+            "강서구": {"num": 0, "list": []},
+            "강동구": {"num": 0, "list": []},
+            "강남구": {"num": 0, "list": []},
+            "종로구": {"num": 0, "list": []},
         },
         "total_movie": {
             "동대문구": {"before": 0, "now": 0, "after": 0},
@@ -1363,11 +1511,23 @@ def main_movie_crawler():
             "송파구": {"before": 0, "now": 0, "after": 0},
             "영등포구": {"before": 0, "now": 0, "after": 0},
             "은평구": {"before": 0, "now": 0, "after": 0},
+            "양천구": {"before": 0, "now": 0, "after": 0},
+            "서대문구": {"before": 0, "now": 0, "after": 0},
+            "마포구": {"before": 0, "now": 0, "after": 0},
+            "동작구": {"before": 0, "now": 0, "after": 0},
+            "도봉구": {"before": 0, "now": 0, "after": 0},
+            "노원구": {"before": 0, "now": 0, "after": 0},
+            "용산구": {"before": 0, "now": 0, "after": 0},
+            "구로구": {"before": 0, "now": 0, "after": 0},
+            "강서구": {"before": 0, "now": 0, "after": 0},
+            "강동구": {"before": 0, "now": 0, "after": 0},
+            "강남구": {"before": 0, "now": 0, "after": 0},
+            "종로구": {"before": 0, "now": 0, "after": 0},
         },
         # "deleted_movie": {
-        #     "동대문구":{"num":0,"list":[]},
-        #     "성동구":{"num":0,"list":[]},
-        #     "광진구": {"num": 0,"list": []},
+        #     "동대문구": {"num": 0, "list": []},
+        #     "성동구": {"num": 0, "list": []},
+        #     "광진구": {"num": 0, "list": []},
         #     "중랑구": {"num": 0, "list": []},
         #     "성북구": {"num": 0, "list": []},
         #     "송파구": {"num": 0, "list": []},
@@ -1382,63 +1542,62 @@ def main_movie_crawler():
     day = now.day
     month = now.month
     #
-#     ##### 동대문구 크롤러#####
+    ##### 동대문구 크롤러#####
+
+    dongdaemungu_area_code_list = ['MA', 'MF', 'MB', 'MC', 'MJ']
+    # 정보화,답십리, 장안, 용두, 휘셩 (이문 제외)
+    #     dongdaemungu_area_code_list = ['MA']
+
+    for libGroup in dongdaemungu_area_code_list:
+        dongdaemungu_movie_crawler(year,libGroup)
+        print(
+            f'{libGroup} #####################################################################################################################################')
+
+#     ### 성동구 크롤러 #####
 #
-#     dongdaemungu_area_code_list = ['MA', 'MF', 'MB', 'MC', 'MJ']
-#     # 정보화,답십리, 장안, 용두, 휘셩 (이문 제외)
-#     #     dongdaemungu_area_code_list = ['MA']
+#     seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
+#     # 성동구립,용답, 장안, 성수, 금호,청계
+# #     seongdonggu_area_code_list = ['SD']
 #
-#     for libGroup in dongdaemungu_area_code_list:
-#         dongdaemungu_movie_crawler(year,libGroup)
-#         print(
-#             f'{libGroup} #####################################################################################################################################')
-#
-# #     ### 성동구 크롤러 #####
-# #
-# #     seongdonggu_area_code_list = ['SD','YD','SS','KH','CG']
-# #     # 성동구립,용답, 장안, 성수, 금호,청계
-# # #     seongdonggu_area_code_list = ['SD']
-# #
-# #     for area_code in seongdonggu_area_code_list:
-# #         seongdonggu_movie_crawler(area_code,year)
-# #         print(f'{area_code}#############################################################################################################################')
-# #
-# #
-#
-#
-# #     ##### 광진구 크롤러 #####
-#     gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
-# #     정보 , 중곡문화체육센터, 구의제3동
-#     for area_code in gwangjingu_area_code_list:
-#         gwangjingu_movie_crawler(area_code,year,month)
+#     for area_code in seongdonggu_area_code_list:
+#         seongdonggu_movie_crawler(area_code,year)
 #         print(f'{area_code}#############################################################################################################################')
 #
-#
-#     ###### 중랑구 크롤러 #####
-#     jungnanggu_area_code = "JMA"  # 한곳이라 걍 변수로만함.
-#     jungnanggu_movie_crawler(jungnanggu_area_code)
-#     print(f'{jungnanggu_area_code}#############################################################################################################################')
-#
-#     ###### 성북구 크롤러 #####
-#     seongbukgu_area_code = "snlib"  # 한곳이라 걍 변수로만함.
-#     seongbukgu_movie_crawler(seongbukgu_area_code)
-#     print(f'{seongbukgu_area_code}#############################################################################################################################')
-#
-#     ###### 송파구 크롤러 #####
-#     songpagu_area_code_list = ['SPJ', 'SPC', 'SPG', 'SPE', 'SP1', 'SP2', 'SP3', 'SP4', 'SPM']
-#
-#     for libGroup in songpagu_area_code_list:
-#         songpagu_movie_crawler(libGroup)
-#         print(f'{libGroup} #####################################################################################################################################')
-#
-#
-#     ###### 영등포구 크롤러 ######
-#     yeongdeungpogu_area_code_list = ["ydpllc", "mllib","dllib","sylib"]
-#
-#     for libGroup in yeongdeungpogu_area_code_list:
-#         yeongdeungpogu_movie_crawler(libGroup)
-#         print(f'{libGroup} #####################################################################################################################################')
-#
+
+#     ##### 광진구 크롤러 #####
+    gwangjingu_area_code_list = ['gjinfo','jgsports','gu3dong']
+#     정보 , 중곡문화체육센터, 구의제3동
+    for area_code in gwangjingu_area_code_list:
+        gwangjingu_movie_crawler(area_code,year,month)
+        print(f'{area_code}#############################################################################################################################')
+
+
+    ###### 중랑구 크롤러 #####
+    jungnanggu_area_code = "JMA"  # 한곳이라 걍 변수로만함.
+    jungnanggu_movie_crawler(jungnanggu_area_code)
+    print(f'{jungnanggu_area_code}#############################################################################################################################')
+
+    ###### 성북구 크롤러 #####
+    seongbukgu_area_code = "snlib"  # 한곳이라 걍 변수로만함.
+    seongbukgu_movie_crawler(seongbukgu_area_code)
+    print(f'{seongbukgu_area_code}#############################################################################################################################')
+
+    ###### 송파구 크롤러 #####
+    songpagu_area_code_list = ['SPJ', 'SPC', 'SPG', 'SPE', 'SP1', 'SP2', 'SP3', 'SP4', 'SPM']
+
+    for libGroup in songpagu_area_code_list:
+        songpagu_movie_crawler(libGroup)
+        print(f'{libGroup} #####################################################################################################################################')
+
+
+    ###### 영등포구 크롤러 ######
+    # yeongdeungpogu_area_code_list = ["ydpllc", "mllib","dllib","sylib"]
+    yeongdeungpogu_area_code_list = ["mllib","dllib","sylib"]  # 19.6.6부로 "ydpllc",는 seoul_massive_crawler로 넘어감  서울특별시 교육청 산하는 한번에 크롤링
+
+    for libGroup in yeongdeungpogu_area_code_list:
+        yeongdeungpogu_movie_crawler(libGroup)
+        print(f'{libGroup} #####################################################################################################################################')
+
 
     ###### 은평구 크롤러 ######
     eunpyeonggu_area_code_list = ["eplib", "enlib", "jsplib", "ealib", "gsvlib"]
@@ -1446,6 +1605,11 @@ def main_movie_crawler():
     for libGroup in eunpyeonggu_area_code_list:
         eunpyeonggu_movie_crawler(libGroup)
         print(f'{libGroup} #####################################################################################################################################')
+
+    ######서울특별시 교육청 통합 크롤러 ########
+    print("######서울특별시 교육청 통합 크롤러 ######################################################################################################################")
+    seoul_massive_crawler(year, month)
+
 
 
     # 현제시간 - 5분
