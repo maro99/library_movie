@@ -14,6 +14,7 @@
 - API SERVER URL :  https://api.maro5.com  
 - FRONT WEB URL  :  https://maro5.com  
 - APP DOCUMENT : https://library-movie.gitbook.io/project/
+- 동작영상 : https://youtu.be/J6XzSZ-PZSA
 ---  
 &nbsp;
 
