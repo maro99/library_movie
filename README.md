@@ -4,7 +4,7 @@
 &nbsp;
 
 ### Introduction  
-#### 서울시 N개 도서관 의 무료 상영 정보 제공을 위한 웹 페이지를 제작하는 프로젝트 입니다. 
+#### 서울시 50여개 도서관 의 무료 상영 정보 제공을 위한 웹 페이지를 제작하는 프로젝트 입니다. 
 
 ---  
 &nbsp;
@@ -14,6 +14,7 @@
 - API SERVER URL :  https://api.maro5.com  
 - FRONT WEB URL  :  https://maro5.com  
 - APP DOCUMENT : https://library-movie.gitbook.io/project/
+- 영상 : https://youtu.be/J6XzSZ-PZSA
 ---  
 &nbsp;
 
