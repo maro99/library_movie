@@ -181,10 +181,15 @@ def send_alarm_email():
 
         if movielike.user.set_alarm_before_3h and movielike.user.email:
 
+            # movielike.libarary.libarary_name 이 서울특별시교육청%20동대문도서관 이렇게 떨어진경우 %20중간에 넣어주는 처리 선행되야함.
+            library_name = movielike.library.library_name
+            if " " in library_name:
+                library_name = library_name.replace(" ", "%20")
+
             message = render_to_string('movie/alarm_form.html', {
                 'title':movielike.movie.title,
                 'when':movielike.movie.when,
-                'library': movielike.movie.library.library_name,
+                'library': library_name,
                 'place':movielike.movie.place
 
             })
