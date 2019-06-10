@@ -21,7 +21,7 @@ from django.contrib.auth import get_user_model
 from sdk.api.message import Message
 from sdk.exceptions import CoolsmsException
 from config.settings.base import SMS_API_KEY, SMS_API_SECRET
-
+from django.utils import timezone
 
 import datetime
 
@@ -146,26 +146,49 @@ def send_alarm_email():
     # 모든 좋아요를 돌면서 연관된 영화가 시작 24시간 전인 좋아요만 필터링 한다. ( 연습에선 0~24시간 전 사이인것.
     # 좋아요 와 연관된 영화의 (제목, 상영시간, 위치 ) + 연관된 유저의 ( 이메일) 뽑아서 이메일 보낸다.
 
-    now = datetime.datetime.now()
+    # 어짜피 대부분의 영화 30분 단위로 끊긴다. 그렇기때문에 매분 찜목록 확인할 필요없이 30분에 한번씩만 해도됨.  --> 이건 celery beat의 스케줄 간격
+    # 찜 확인시에는 4시간 ~ 4시간 +1시간  이렇게 간격 잡지 말고    ----> 4시간 =  4시간 그냥 일치를 비교하자.
+
+
+    # 이거 초 이하는 잘라내 버리자./ 01,02분 --> 00분 혹 31, 32분이면  --> 30분으로 퉁치자.
+    now_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M')
+    now_list= now_str.split('-')
+    now_year, now_month, now_day, now_hour, now_minutes = now_list
+
+    if 0 < int(now_minutes) < 30:
+        now_minutes = "0"
+    elif 30 < int(now_minutes) < 60:
+        now_minutes = "30"
+
+    d = datetime.date(int(now_year), int(now_month), int(now_day))
+    t = datetime.time(int(now_hour), int(now_minutes), 0)
+    now = datetime.datetime.combine(d, t)                           # 이 함수를 30분 단위로 돌리고 바로 위에서 반올림 해줬으니
+                                                                    # now 에는 1:00, 1:30 이런식으로 초 없이 30분 단위 시간 정확히 들어가 있어야함.
+
     one_day_later = now + datetime.timedelta(days=1)
-    one_day_and_an_hour_later = now + datetime.timedelta(days=1) + datetime.timedelta(hours=1)
     four_hours_later = now + datetime.timedelta(hours=4)
-    five_horus_later = now + datetime.timedelta(hours=5)
 
-    movies_24hour_later = MovieLike.objects.filter(movie__when__gte=one_day_later, movie__when__lt=one_day_and_an_hour_later)
-    movies_4hour_later= MovieLike.objects.filter(movie__when__gte=four_hours_later, movie__when__lt=five_horus_later)
+    movies_24hour_later = MovieLike.objects.filter(movie__when=one_day_later)
+    movies_4hour_later= MovieLike.objects.filter(movie__when=four_hours_later)
 
 
-    # 24시간이후 <=  x  < 25시간 이후
+    # 24시간이후
     for movielike in movies_24hour_later:
 
         if movielike.user.set_alarm_before_24h and movielike.user.email:
 
+            # movielike.libarary.libarary_name 이 서울특별시교육청%20동대문도서관 이렇게 떨어진경우 %20중간에 넣어주는 처리 선행되야함.
+            library_name = movielike.movie.library.library_name
+            search_query = library_name
+            if " " in library_name:
+                search_query = library_name.replace(" ", "%20")
+
             message = render_to_string('movie/alarm_form.html', {
-                'title':movielike.movie.title,
-                'when':movielike.movie.when,
-                'library': movielike.movie.library.library_name,
-                'place':movielike.movie.place
+                'title': movielike.movie.title,
+                'when': movielike.movie.when,
+                'library': library_name,
+                'search_query': search_query,
+                'place': movielike.movie.place
 
             })
 
@@ -176,21 +199,23 @@ def send_alarm_email():
             email.send()
 
 
-    # 4시간이후 <=  x  < 5시간 이후
+    # 4시간이후
     for movielike in movies_4hour_later:
 
         if movielike.user.set_alarm_before_3h and movielike.user.email:
 
             # movielike.libarary.libarary_name 이 서울특별시교육청%20동대문도서관 이렇게 떨어진경우 %20중간에 넣어주는 처리 선행되야함.
-            library_name = movielike.library.library_name
+            library_name = movielike.movie.library.library_name
+            search_query = library_name
             if " " in library_name:
-                library_name = library_name.replace(" ", "%20")
+                search_query = library_name.replace(" ", "%20")
 
             message = render_to_string('movie/alarm_form.html', {
-                'title':movielike.movie.title,
-                'when':movielike.movie.when,
+                'title': movielike.movie.title,
+                'when': movielike.movie.when,
                 'library': library_name,
-                'place':movielike.movie.place
+                'search_query': search_query,
+                'place': movielike.movie.place
 
             })
 

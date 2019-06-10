@@ -52,14 +52,15 @@ app.conf.beat_schedule = {
     #     'schedule': 5.0,  # 5초마다
     #     'args': (16,16)
     # },
-    'add-every-hour-contab': {
+    'add-every-half-hour-contab': {
         'task': 'send_alarm_email',
-        'schedule': crontab(minute=0, hour='*/1'),
+        # 'schedule': crontab(minute=0, hour='*/1'),
+        'schedule': crontab(minute='*/30'),                # 30분마다 찜영화 대한 알람 전송.
         # 'schedule': crontab(minute=34, hour=21),
         # 'schedule': 30.0,  # 5초마다
         'args': ()
     },
-    'add-every-minute-contrab': {
+    'add-every-day-contrab': {
         'task': 'crawling_then_send_result_email',
         'schedule': crontab(minute=1, hour=18),
         'args': (),
