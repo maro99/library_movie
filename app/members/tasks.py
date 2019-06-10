@@ -167,9 +167,11 @@ def send_alarm_email():
 
     one_day_later = now + datetime.timedelta(days=1)
     four_hours_later = now + datetime.timedelta(hours=4)
+    half_hours_later = now + datetime.timedelta(minutes=30)
 
     movies_24hour_later = MovieLike.objects.filter(movie__when=one_day_later)
     movies_4hour_later= MovieLike.objects.filter(movie__when=four_hours_later)
+    movies_half_hour_later= MovieLike.objects.filter(movie__when=half_hours_later)
 
 
     # 24시간이후
@@ -220,6 +222,33 @@ def send_alarm_email():
             })
 
             mail_subject = "찜하신 영화 상영 4시간전 알람"
+            to_email = movielike.user.email
+            # EmailMessaage(제목, 본문, 받는이)
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
+
+
+    # 0.5시간이후
+    for movielike in movies_half_hour_later:
+
+        if movielike.user.set_alarm_before_half_h and movielike.user.email:
+
+            # movielike.libarary.libarary_name 이 서울특별시교육청%20동대문도서관 이렇게 떨어진경우 %20중간에 넣어주는 처리 선행되야함.
+            library_name = movielike.movie.library.library_name
+            search_query = library_name
+            if " " in library_name:
+                search_query = library_name.replace(" ", "%20")
+
+            message = render_to_string('movie/alarm_form.html', {
+                'title': movielike.movie.title,
+                'when': movielike.movie.when,
+                'library': library_name,
+                'search_query': search_query,
+                'place': movielike.movie.place
+
+            })
+
+            mail_subject = "찜하신 영화 상영 30분전 알람"
             to_email = movielike.user.email
             # EmailMessaage(제목, 본문, 받는이)
             email = EmailMessage(mail_subject, message, to=[to_email])

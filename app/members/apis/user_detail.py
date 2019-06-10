@@ -314,8 +314,17 @@ class UserSetAlarm(APIView):
             else:
                 user.set_alarm_before_3h = True
                 data = {'detail': '영화 시작 3시간전 알람 설정됨'}
+
+        # 0.5시간 이후 타입에 대한 요청이 경우
+        elif type_num == 1:
+            if user.set_alarm_before_half_h:
+                user.set_alarm_before_half_h = False
+                data = {'detail': '영화 시작 30분전 알람 해제됨'}
+            else:
+                user.set_alarm_before_half_h = True
+                data = {'detail': '영화 시작 30분전 알람 설정됨'}
         else:
-            data = {'detail': '시간 타입 설정 오류 (24 or 3 시간중 하나로 설정 가능합니다.)'}
+            data = {'detail': '시간 타입 설정 오류 (24 or 3 or 1 시간중 하나로 설정 가능합니다.)'}
 
 
 

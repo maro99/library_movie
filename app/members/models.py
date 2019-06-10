@@ -17,6 +17,7 @@ class User(AbstractUser):
     objects = UserManager()
     set_alarm_before_24h = models.BooleanField(default=False)
     set_alarm_before_3h = models.BooleanField(default=False)
+    set_alarm_before_half_h = models.BooleanField(default=False)
 
     @property
     def like_movies(self):
