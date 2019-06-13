@@ -76,19 +76,32 @@ class GoogleAuthToken(APIView):
             return response_dict
 
         def create_user_from_google_user_info(response_dict):
-            id = response_dict['id']
-            given_name = response_dict['given_name']
-            family_name = response_dict['family_name']
-            email = response_dict['email']
+            id = response_dict.get('id')
+            given_name = response_dict.get('given_name')
+            family_name = response_dict.get('family_name')
+            email = response_dict.get('email')
 
-            return User.objects.get_or_create(
-
-                username=id,
+            if given_name and family_name and email:
                 defaults={
                     'first_name': given_name,  # 이값은 고유해서 get할때 사용 가능.
                     'last_name': family_name,  # 이값은 고유하지 않아도됨. 입력되는 값.
                     'email': email,
                 }
+            elif given_name and email:
+                defaults={
+                    'first_name': given_name,
+                    'email': email,
+                }
+            elif family_name and email:
+                defaults={
+                    'last_name': family_name,
+                    'email': email,
+                }
+
+            return User.objects.get_or_create(
+
+                username=id,
+                defaults=defaults
             )
 
         user_info_dict = get_user_info(access_token)  # ,fields=['id', 'name', 'first_name', 'last_name', 'picture']
