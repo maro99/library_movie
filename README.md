@@ -14,7 +14,9 @@
 - API SERVER URL :  https://api.maro5.com  
 - FRONT WEB URL  :  https://maro5.com  
 - APP DOCUMENT : https://library-movie.gitbook.io/project/
-- 영상 : https://youtu.be/J6XzSZ-PZSA
+- 개발일지 :  https://www.evernote.com/pub/nadcdc/library_movie_log
+- 영상 : https://youtu.be/J6XzSZ-PZSA  
+
 ---  
 &nbsp;
 
@@ -46,6 +48,7 @@
 
 * 백엔드 API 서버와 프론트엔드 프로젝트 Elastic Beanstalk 이용해서 동시에 배포 
 
+* 브라우저 접속 위치 로부터 각 영화 상영위치 까지 거리 순으로 정렬. 
 
 * Sentry 적용 하여 배포,크롤링 및 유저 사용 시 오류 보고  
 
