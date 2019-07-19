@@ -36,7 +36,20 @@ REST_FRAMEWORK = {
 }
 
 # DB
-DATABASES = secrets['DATABASES']
+if 'TRAVIS' in os.environ:
+    # Test DB for Travis CI
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'travis_ci_db',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'PORT': 5432,
+            'HOST': 'localhost',
+        }
+    }
+else:
+    DATABASES = secrets['DATABASES']
 
 
 # CELERY + Redis  #local에서
