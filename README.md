@@ -14,7 +14,7 @@
 - API SERVER URL :  https://api.maro5.com  
 - FRONT WEB URL  :  https://maro5.com  
 - APP DOCUMENT : https://library-movie.gitbook.io/project/
-- 개발일지 :  https://www.evernote.com/pub/nadcdc/library_movie_log
+- 개발일지 :  [https://maro99.github.io/category/도서관영화프로젝트.html](https://maro99.github.io/category/%EB%8F%84%EC%84%9C%EA%B4%80%EC%98%81%ED%99%94%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8.html)
 - 영상 : https://youtu.be/J6XzSZ-PZSA  
 
 ---  
