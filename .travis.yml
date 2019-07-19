@@ -2,9 +2,13 @@ language: python
 python:
 - 3.6.5
 
-install:
-    - pip install -r requirements.txt
+before_install:
+- openssl aes-256-cbc -K $encrypted_cdad78b402c4_key -iv $encrypted_cdad78b402c4_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
 
+install:
+- pip install -r requirements.txt
 
 script:
-    - python app/manage.py test
+- python app/manage.py test
