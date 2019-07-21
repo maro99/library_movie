@@ -17,6 +17,9 @@ install:
 branches:
   only:
   - master
+
+cache: pip
+
 before_script:
 - psql -c 'create database travis_ci_db;' -U postgres
 
