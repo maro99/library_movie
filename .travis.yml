@@ -10,7 +10,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_cdad78b402c4_key -iv $encrypted_cdad78b402c4_iv
   -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
-- export DJANGO_SETTINGS_MODULE=config.settings.production
+- export DJANGO_SETTINGS_MODULE=config.settings.local
 install:
 - pip install -r requirements.txt
 
