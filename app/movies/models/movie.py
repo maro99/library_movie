@@ -1,5 +1,9 @@
 from django.db import models
-from movies.models import Library
+from .locations import Library
+
+__all__ =(
+    'Movie',
+    )
 
 
 class Movie (models.Model):

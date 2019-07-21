@@ -1,3 +1,2 @@
-from .locations import *
 from .movie import *
-
+from .locations import *
