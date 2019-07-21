@@ -25,3 +25,21 @@ before_script:
 
 script:
 - python app/manage.py test
+- git add -A
+
+before_deploy:
+- zip -r archive.zip .
+
+deploy:
+  provider: elasticbeanstalk
+  zip_file: archive.zip
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+  region: ap-northeast-2
+  app: EB Docker Deploy Movie
+  env: EBDockerDeploy-Movie
+  bucket_name: library-movie-travis-deploy
+  skip_cleanup: true
+  on:
+    branch: master
