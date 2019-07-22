@@ -8,7 +8,7 @@ git clone git@github.com:maro99/library_movie_frontend.git front
 
 rm -rf front/.git
 
-# root_url dev환경 맞게 변경
+# root_url 배포환경 맞게 변경
 cat front/js/address_variable_eb.js > front/js/address_variable.js
 
 # 프론트 프로젝트 git에 추가.
