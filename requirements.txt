@@ -13,7 +13,7 @@ bs4==0.0.1
 cached-property==1.5.1
 celery==4.1.1
 cement==2.8.2
-certifi==2019.3.9
+certifi==2022.12.7
 chardet==3.0.4
 colorama==0.3.9
 coolsms-python-sdk==2.0.3
